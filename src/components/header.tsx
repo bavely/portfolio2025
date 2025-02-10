@@ -11,7 +11,7 @@ const Header = () => {
 const { theme } = useTheme();
 
   return (
-    <div className='grid grid-cols-2 gap-4 items-between w-full'>
+    <div className='grid grid-cols-2 gap-4 items-center justify-center w-[80%] fixed top-10 z-50'>
 
         <div className='flex items-start justify-start '>
           {theme === 'dark' ? (
@@ -23,7 +23,7 @@ const { theme } = useTheme();
             
         </div>
 
-        <div className='flex items-center justify-end gap-4'>
+        <div className='flex items-center justify-end gap-4 lg:mr-0 md:mr-2 mr-6'>
             
             <ModeToggle />
             <Clock format={'hh:mm:ss A'} ticking={true} className='text-xs' />

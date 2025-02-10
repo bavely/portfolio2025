@@ -6,7 +6,7 @@ import {
   IconExchange,
   IconHome,
   IconNewSection,
-  IconTerminal2,
+  IconUserBolt,
 } from "@tabler/icons-react";
 
 export function Nav() {
@@ -16,15 +16,15 @@ export function Nav() {
       icon: (
         <IconHome className="h-full w-full text-neutral-500 dark:text-neutral-300" />
       ),
-      href: "#",
+      href: "/",
     },
 
     {
-      title: "Products",
+      title: "About Me", 
       icon: (
-        <IconTerminal2 className="h-full w-full text-neutral-500 dark:text-neutral-300" />
+        <IconUserBolt className="h-full w-full text-neutral-500 dark:text-neutral-300" />
       ),
-      href: "#",
+      href: "/about",
     },
     {
       title: "Components",
@@ -57,7 +57,7 @@ export function Nav() {
     },
   ];
   return (
-    <div className="flex items-center justify-center  fixed bottom-10 left-0 right-0">
+    <div className="flex items-center justify-center  fixed bottom-10 left-0 right-0 z-50">
       <FloatingDock
         items={links}
       />

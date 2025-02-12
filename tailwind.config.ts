@@ -22,9 +22,29 @@ const config: Config = {
   			glow: 'glow 1.5s infinite',
   			floating: 'floating 2s ease-in-out infinite alternate',
   			fadein: 'fadein 1s ease-in-out',
-  			'shiny-text': 'shiny-text 8s infinite'
+  			'shiny-text': 'shiny-text 8s infinite',
+			slideleft:' slideleft 0.5s forwards',
+			slideright: 'slideright 0.5s forwards'
   		},
   		keyframes: {
+			slideleft: {
+			'0%':{
+				transform: 'translateX(0%)'
+			},
+			'100%':{
+				transform: 'translateX(-100%)'
+			}		
+
+				
+			},
+			slideright: {
+				'0%':{
+					transform: 'translateX(100%)'
+				},
+				'100%':{
+					transform: 'translateX(0%)'
+				}
+			},
   			glow: {
   				'0%, 100%': {
   					boxShadow: '0 0 10px #ff00ff'

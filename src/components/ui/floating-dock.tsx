@@ -9,8 +9,10 @@ import {
   useSpring,
   useTransform,
 } from "framer-motion";
-import Link from "next/link";
+import { Link } from 'next-view-transitions'
+
 import { useRef, useState } from "react";
+
 
 export const FloatingDock = ({
   items,
@@ -162,8 +164,9 @@ function IconContainer({
 
   const [hovered, setHovered] = useState(false);
 
+
   return (
-    <Link href={href}>
+    <Link href={href} >
       <motion.div
         ref={ref}
         style={{ width, height }}

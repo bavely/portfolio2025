@@ -1,8 +1,9 @@
-import Link from "next/link";
+"use client"
+import { Link } from 'next-view-transitions'
 
 export default function About() {
   return (
-    <section className="h-screen min-h-screen items-center justify-center flex lg:flex-row md:flex-row flex-col   ">
+    <section className="h-screen min-h-screen items-center justify-center flex lg:flex-row md:flex-row flex-col animate-fadein duration-1000 ">
 
         <div className=" justify-center items-center text-center flex  flex-col  " >
           <h1 className="lg:text-4xl md:text-3xl text-2xl lg:font-bold animate-floating delay-1000">About Me</h1>

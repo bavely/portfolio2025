@@ -1,8 +1,9 @@
 import React from 'react'
-import Link from "next/link";
+import { Link } from 'next-view-transitions'
+
 const Contct = () => {
   return (
-    <section className="h-screen min-h-screen items-center justify-center flex lg:flex-row md:flex-row flex-col   ">
+    <section className="h-screen min-h-screen items-center justify-center flex lg:flex-row md:flex-row flex-col  animate-fadein duration-1000 ">
 
     <div className=" justify-center items-center text-center flex  flex-col  " >
       <h1 className="lg:text-4xl md:text-3xl text-2xl lg:font-bold animate-floating delay-1000"> Skills </h1>

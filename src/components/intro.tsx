@@ -7,7 +7,8 @@ import { useMediaQuery } from "../hooks/useMediaQuery";
 import { AuroraText } from "@/components/ui/aurora-text";
 import { ArrowRightIcon } from "@radix-ui/react-icons";
 import { AnimatedShinyText } from "@/components/ui/animated-shiny-text";
-import Link from "next/link";
+import { Link } from 'next-view-transitions'
+
 const Intro = () => {
   const { theme } = useTheme();
    const isMobile = useMediaQuery("(max-width: 770px)");

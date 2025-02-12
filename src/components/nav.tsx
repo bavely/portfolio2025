@@ -1,8 +1,6 @@
 import React from "react";
 import { FloatingDock } from "@/components/ui/floating-dock";
 import {
-  IconBrandGithub,
-  IconBrandX,
   IconExchange,
   IconHome,
   IconNewSection,
@@ -27,34 +25,19 @@ export function Nav() {
       href: "/about",
     },
     {
-      title: "Components",
+      title: "Skills",
       icon: (
         <IconNewSection className="h-full w-full text-neutral-500 dark:text-neutral-300" />
       ),
-      href: "#",
+      href: "/skills",
     },
     {
-      title: "Changelog",
+      title: "Contact Me",
       icon: (
         <IconExchange className="h-full w-full text-neutral-500 dark:text-neutral-300" />
       ),
-      href: "#",
-    },
-
-    {
-      title: "Twitter",
-      icon: (
-        <IconBrandX className="h-full w-full text-neutral-500 dark:text-neutral-300" />
-      ),
-      href: "#",
-    },
-    {
-      title: "GitHub",
-      icon: (
-        <IconBrandGithub className="h-full w-full text-neutral-500 dark:text-neutral-300" />
-      ),
-      href: "#",
-    },
+      href: "/contactme",
+    }
   ];
   return (
     <div className="flex items-center justify-center  fixed bottom-10 left-0 right-0 z-50">

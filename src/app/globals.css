@@ -19,6 +19,8 @@
     @apply items-center justify-center flex flex-col h-full absolute w-full z-[1] text-center left-0 inset-y-0;
     /* padding: 2rem 5rem 2rem 5rem; */
 }
+
+
   
 }
 
@@ -101,7 +103,7 @@
   body {
 
     @apply bg-gradient-to-r from-blue-200 to-cyan-200 text-foreground dark:bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))]
-    dark:from-slate-950  dark:to-[rgb(31,20,42)] ;
+    dark:from-slate-950  dark:to-[#1f142a] ;
   }
 
 }
@@ -143,4 +145,25 @@
   to {
     transform: translateX(-100%);
   }
+}
+
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  border-radius: 100vh;
+  background: #020617;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #1f142a;
+  border-radius: 100vh;
+  border: 2px solid #1f142a;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #c0a0b9;
 }

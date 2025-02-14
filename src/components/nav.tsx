@@ -1,10 +1,11 @@
 import React from "react";
 import { FloatingDock } from "@/components/ui/floating-dock";
 import {
-  IconExchange,
+  IconMessage2Share,
   IconHome,
-  IconNewSection,
   IconUserBolt,
+  IconStar,
+  IconPresentation
 } from "@tabler/icons-react";
 
 export function Nav() {
@@ -27,14 +28,21 @@ export function Nav() {
     {
       title: "Skills",
       icon: (
-        <IconNewSection className="h-full w-full text-neutral-500 dark:text-neutral-300" />
+        <IconStar className="h-full w-full text-neutral-500 dark:text-neutral-300" />
       ),
       href: "/skills",
     },
     {
+      title: "Portfolio",
+      icon: (
+        <IconPresentation className="h-full w-full text-neutral-500 dark:text-neutral-300" />
+      ),
+      href: "/portfolio",
+    },
+    {
       title: "Contact Me",
       icon: (
-        <IconExchange className="h-full w-full text-neutral-500 dark:text-neutral-300" />
+        <IconMessage2Share className="h-full w-full text-neutral-500 dark:text-neutral-300" />
       ),
       href: "/contactme",
     }

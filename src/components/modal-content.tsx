@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import {
   ModalBody,
   ModalContent,
@@ -17,17 +17,31 @@ import {
     TableHeader,
     TableRow,
   } from "@/components/ui/table"
-  
+  import ImageViewer from "react-simple-image-viewer";
 export function AnimatedModal({ slide }: { slide: SlideData }) {
   const { setOpen } = useModal();
 
   const [currentSlide, setCurrentSlide] = useState(slide);
+  const [currentImage, setCurrentImage] = useState(0);
+  const [isViewerOpen, setIsViewerOpen] = useState(false);
+  const [imagesList, setImagesList] = useState<string[]>([]);
 
   useEffect(() => {
     if (slide) {
         setCurrentSlide(slide);
+        setImagesList(slide.about.Images);
     }
   }, [slide]);
+
+  const openImageViewer = useCallback((index: React.SetStateAction<number>) => {
+    setCurrentImage(index);
+    setIsViewerOpen(true);
+  }, []);
+
+  const closeImageViewer = () => {
+    setCurrentImage(0);
+    setIsViewerOpen(false);
+  };
   return (
     <ModalBody>
       <ModalContent className="overflow-y-scroll">
@@ -59,6 +73,7 @@ export function AnimatedModal({ slide }: { slide: SlideData }) {
                 width="500"
                 height="500"
                 className="rounded-lg h-20 w-20 md:h-40 md:w-40 object-cover flex-shrink-0"
+                onClick={() => openImageViewer(idx)}
               />
             </motion.div>
           ))}
@@ -108,6 +123,18 @@ export function AnimatedModal({ slide }: { slide: SlideData }) {
           Close
         </button>
       </ModalFooter>
+      {isViewerOpen && (
+        <ImageViewer
+          src={imagesList}
+          currentIndex={currentImage}
+          onClose={closeImageViewer}
+          disableScroll={false}
+          backgroundStyle={{
+            backgroundColor: "rgba(0,0,0,0.9)"
+          }}
+          closeOnClickOutside={true}
+        />
+      )}
     </ModalBody>
   );
 }

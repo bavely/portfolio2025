@@ -23,28 +23,27 @@ const config: Config = {
   			floating: 'floating 2s ease-in-out infinite alternate',
   			fadein: 'fadein 1s ease-in-out',
   			'shiny-text': 'shiny-text 8s infinite',
-			slideleft:' slideleft 0.5s forwards',
-			slideright: 'slideright 0.5s forwards'
+  			slideleft: ' slideleft 0.5s forwards',
+  			slideright: 'slideright 0.5s forwards',
+  			'background-position-spin': 'background-position-spin 3000ms infinite alternate'
   		},
   		keyframes: {
-			slideleft: {
-			'0%':{
-				transform: 'translateX(0%)'
-			},
-			'100%':{
-				transform: 'translateX(-100%)'
-			}		
-
-				
-			},
-			slideright: {
-				'0%':{
-					transform: 'translateX(100%)'
-				},
-				'100%':{
-					transform: 'translateX(0%)'
-				}
-			},
+  			slideleft: {
+  				'0%': {
+  					transform: 'translateX(0%)'
+  				},
+  				'100%': {
+  					transform: 'translateX(-100%)'
+  				}
+  			},
+  			slideright: {
+  				'0%': {
+  					transform: 'translateX(100%)'
+  				},
+  				'100%': {
+  					transform: 'translateX(0%)'
+  				}
+  			},
   			glow: {
   				'0%, 100%': {
   					boxShadow: '0 0 10px #ff00ff'
@@ -151,6 +150,14 @@ const config: Config = {
   				},
   				'30%, 60%': {
   					'background-position': 'calc(100% + var(--shiny-width)) 0'
+  				}
+  			},
+  			'background-position-spin': {
+  				'0%': {
+  					backgroundPosition: 'top center'
+  				},
+  				'100%': {
+  					backgroundPosition: 'bottom center'
   				}
   			}
   		},

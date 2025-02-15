@@ -1,30 +1,107 @@
-import React from 'react'
-import { Link } from 'next-view-transitions'
+"use client";
 
-const Contct = () => {
+import { useState } from "react";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@/components/ui/button";
+import { CardContent, CardHeader } from "@/components/ui/card";
+import { Mail, Linkedin, Github } from "lucide-react";
+import { NeonGradientCard } from "@/components/ui/neon-gradient-card";
+import { GoogleReCaptchaProvider, useGoogleReCaptcha } from "react-google-recaptcha-v3";
+import {submitContactForm} from "./actions"; // Server action
+
+const RECAPTCHA_SITE_KEY = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY; // Replace with actual reCAPTCHA site key
+console.log(RECAPTCHA_SITE_KEY);
+function ContactForm() {
+  const { executeRecaptcha } = useGoogleReCaptcha();
+  const [formData, setFormData] = useState({ name: "", email: "", message: "" });
+  const [loading, setLoading] = useState(false);
+
+  const handleChange = (e: { target: { name: string; value: string } }) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!executeRecaptcha) {
+      alert("reCAPTCHA is not ready yet.");
+      return;
+    }
+
+    setLoading(true);
+    const token = await executeRecaptcha("contact_form");
+
+    const result = await submitContactForm(formData, token); // Call server action
+
+    setLoading(false);
+    console.log(result);
+    if (result.success) {
+      alert("Message sent successfully!");
+      setFormData({ name: "", email: "", message: "" });
+    } else {
+      alert("Failed to send message. Please try again.");
+    }
+  };
+
   return (
-    <section className="h-screen min-h-screen items-center justify-center flex lg:flex-row md:flex-row flex-col  animate-fadein duration-1000 ">
-
-    <div className=" justify-center items-center text-center flex  flex-col  " >
-      <h1 className="lg:text-4xl md:text-3xl text-2xl lg:font-bold animate-floating delay-1000"> Skills </h1>
-        <Link href="/">
-          <h1 className="text-2xl font-bold tracking-tighter md:text-5xl lg:text-7xl " >
-            <span className="bg-gradient-to-r from-pink-500  to-yellow-500 bg-clip-text text-transparent">
-              Home
-            </span>
-          </h1>
-        </Link>
-        <Link href="/about">
-          <h1 className="text-2xl font-bold tracking-tighter md:text-5xl lg:text-7xl " >
-            <span className="bg-gradient-to-r from-pink-500  to-yellow-500 bg-clip-text text-transparent">
-              About Me
-            </span>
-          </h1>
-        </Link>
-        </div>
-
-    </section>
-  )
+    <NeonGradientCard className="h-[fit-content] max-w-sm items-center justify-center text-center">
+      <CardHeader className="pointer-events-none z-10 whitespace-pre-wrap bg-gradient-to-br from-[#ff2975] from-35% to-[#00FFF1] bg-clip-text text-center text-2xl font-bold leading-none tracking-tighter text-transparent dark:drop-shadow-[0_5px_5px_rgba(0,0,0,0.8)]">
+        Get in Touch
+      </CardHeader>
+      <CardContent>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <Input
+            name="name"
+            placeholder="Your Name"
+            className="bg-gray-700 border-gray-600 text-white"
+            onChange={handleChange}
+            required
+          />
+          <Input
+            type="email"
+            name="email"
+            placeholder="Your Email"
+            className="bg-gray-700 border-gray-600 text-white"
+            onChange={handleChange}
+            required
+          />
+          <Textarea
+            name="message"
+            placeholder="Your Message"
+            className="bg-gray-700 border-gray-600 text-white h-32"
+            onChange={handleChange}
+            required
+          />
+          <Button
+            type="submit"
+            className="w-full bg-indigo-600 hover:bg-indigo-500"
+            disabled={loading}
+          >
+            {loading ? "Sending..." : "Send Message"}
+          </Button>
+        </form>
+      </CardContent>
+    </NeonGradientCard>
+  );
 }
 
-export default Contct
+export default function Contct() {
+  return (
+    <GoogleReCaptchaProvider reCaptchaKey={RECAPTCHA_SITE_KEY || ""}>
+      <section className="h-screen min-h-screen w-screen flex flex-col items-center justify-center animate-fadein duration-1000 z-10">
+        <ContactForm />
+        <div className="flex mt-6 space-x-6">
+          <a href="mailto:bavlesamy@gmail.com" className="text-gray-400 hover:text-white">
+            <Mail size={24} />
+          </a>
+          <a href="https://www.linkedin.com/in/bavelytawfik" target="_blank" className="text-gray-400 hover:text-white">
+            <Linkedin size={24} />
+          </a>
+          <a href="https://github.com/bavely" target="_blank" className="text-gray-400 hover:text-white">
+            <Github size={24} />
+          </a>
+        </div>
+      </section>
+    </GoogleReCaptchaProvider>
+  );
+}

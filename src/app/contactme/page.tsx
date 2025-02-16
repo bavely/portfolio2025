@@ -11,7 +11,7 @@ import { GoogleReCaptchaProvider, useGoogleReCaptcha } from "react-google-recapt
 import {submitContactForm} from "./actions"; // Server action
 
 const RECAPTCHA_SITE_KEY = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY; // Replace with actual reCAPTCHA site key
-console.log(RECAPTCHA_SITE_KEY);
+
 function ContactForm() {
   const { executeRecaptcha } = useGoogleReCaptcha();
   const [formData, setFormData] = useState({ name: "", email: "", message: "" });
@@ -34,7 +34,7 @@ function ContactForm() {
     const result = await submitContactForm(formData, token); // Call server action
 
     setLoading(false);
-    console.log(result);
+
     if (result.success) {
       alert("Message sent successfully!");
       setFormData({ name: "", email: "", message: "" });
@@ -56,6 +56,7 @@ function ContactForm() {
             className="bg-gray-700 border-gray-600 text-white"
             onChange={handleChange}
             required
+            value={formData.name}
           />
           <Input
             type="email"
@@ -64,6 +65,7 @@ function ContactForm() {
             className="bg-gray-700 border-gray-600 text-white"
             onChange={handleChange}
             required
+            value={formData.email}
           />
           <Textarea
             name="message"
@@ -71,6 +73,7 @@ function ContactForm() {
             className="bg-gray-700 border-gray-600 text-white h-32"
             onChange={handleChange}
             required
+            value={formData.message}
           />
           <Button
             type="submit"

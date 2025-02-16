@@ -129,10 +129,10 @@ const Portfolio = () => {
     }
   ];
   const handleCurrentSlide = (index: number) => {
-    console.log(index);
+
     setThisslide(slideData[index]);
   }
-  console.log(thisslide)
+
   return (
     <section className="h-screen min-h-screen w-full items-center justify-center flex lg:flex-row md:flex-row flex-col  animate-fadein duration-1000 ">
 

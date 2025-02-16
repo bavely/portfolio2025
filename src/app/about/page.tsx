@@ -1,5 +1,6 @@
 "use client";
 import { Spotlight } from "@/components/ui/spotlight-new";
+import { Link } from 'next-view-transitions'
 export default function About() {
   return (
     <section className="h-screen min-h-screen items-center justify-center  flex lg:flex-row md:flex-row flex-col animate-fadein duration-1000 z-10 p-10 ">
@@ -18,13 +19,13 @@ export default function About() {
         <p className="text-sm font-bold md:text-lg lg:text-lg flex flex-wrap w-[80%] dark:text-slate-400 ">
           🚀 A results-driven Full-Stack Developer with a deep passion for
           crafting modern, scalable, and efficient web applications.
-          <br />
-          🎨 Skilled in front-end and back-end technologies, blending creativity
+          </p>
+          <p className="text-sm font-bold md:text-lg lg:text-lg flex flex-wrap w-[80%] dark:text-slate-400" >🎨 Skilled in front-end and back-end technologies, blending creativity
           with performance optimization.
-          <br />
-          🔧 Experienced in developing responsive applications with React.js,
-          Next.js, TypeScript, Node.js, and more.
-          <br />⚡ A problem solver who thrives in agile environments and enjoys
+          </p>
+          <p className="text-sm font-bold md:text-lg lg:text-lg flex flex-wrap w-[80%] dark:text-slate-400" >🔧 Experienced in developing responsive applications with React.js,
+          Next.js, Angular, TypeScript, Node.js, and &nbsp;<Link href="/skills" className="text-blue-500"> more</Link>.</p>
+          <p className="text-sm font-bold md:text-lg lg:text-lg flex flex-wrap w-[80%] dark:text-slate-400">⚡ A problem solver who thrives in agile environments and enjoys
           tackling complex challenges.
         </p>
       </div>

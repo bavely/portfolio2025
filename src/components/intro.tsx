@@ -7,11 +7,14 @@ import { useMediaQuery } from "../hooks/useMediaQuery";
 import { AuroraText } from "@/components/ui/aurora-text";
 import { ArrowRightIcon } from "@radix-ui/react-icons";
 import { AnimatedShinyText } from "@/components/ui/animated-shiny-text";
-import { Link } from 'next-view-transitions'
+import { Link, useTransitionRouter } from 'next-view-transitions'
+import { ShinyButton } from "./shiny-button";
+import { BoxReveal } from "./box-reveal";
 
 const Intro = () => {
   const { theme } = useTheme();
    const isMobile = useMediaQuery("(max-width: 770px)");
+   const { push } = useTransitionRouter();
   return (
     <section className="h-screen min-h-screen items-center justify-center flex lg:flex-row md:flex-row flex-col   ">
       <div className=" justify-center items-center text-center flex  flex-col  ">
@@ -40,10 +43,15 @@ const Intro = () => {
         )}
         
       </div>
-      <div className=" justify-center items-center text-center flex lg:flex-col flex-row animate-floating delay-600">
+      <div className=" justify-center items-center text-center flex lg:flex-col flex-row animate-floating delay-600 gap-4">
+        <BoxReveal boxColor="#5046e6" duration={0.5}>
         <h1 className="lg:text-4xl md:text-3xl text-2xl lg:font-bold bg-gradient-to-r from-purple-500 to-indigo-400 bg-clip-text text-transparent">
           Welcome to my <br /> portfolio
         </h1>
+        </BoxReveal >
+        <BoxReveal boxColor="#5046e6" duration={0.5}>
+        <ShinyButton onClick={() => push("/contactme")}>Get in Touch</ShinyButton>
+        </BoxReveal>
       </div>
     </section>
   );

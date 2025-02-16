@@ -19,7 +19,7 @@ const ModalContext = createContext<ModalContextType | undefined>(undefined);
 
 export const ModalProvider = ({ children }: { children: ReactNode }) => {
   const [open, setOpen] = useState(false);
-  console.log(open);
+
   return (
     <ModalContext.Provider value={{ open, setOpen }}>
       {children}

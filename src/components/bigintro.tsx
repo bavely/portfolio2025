@@ -18,9 +18,10 @@ const BigIntro = ({ children }: { children: React.ReactNode }) => {
     <>
       {theBigIntro ? (
         <div className="h-screen min-h-screen items-center justify-center flex lg:flex-row md:flex-row flex-col  animate-fadein duration-1000 ">
-          <div className="z-10">
-            loading...
-          </div>
+
+<div className="spinner">
+    <div className="spinner1"></div>
+</div>
         </div>
       ) : (
         children

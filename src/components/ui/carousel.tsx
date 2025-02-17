@@ -8,7 +8,7 @@ import {
 import Link from "next/link";
 import { useState, useRef, useId, useEffect } from "react";
 import { useModal } from "../ui/animated-modal";
-
+import { ShineBorder } from "./shine-border";
 export interface SlideData {
   title: string;
   src: string;
@@ -124,16 +124,21 @@ const Slide = ({ slide, index, current, handleSlideClick }: SlideProps) => {
             <div className="absolute inset-0 bg-black/30 transition-all duration-1000" />
           )}
         </div>
-
-        <article
-          className={`relative p-[4vmin] transition-opacity duration-1000 ease-in-out bg-gradient-to-r from-slate-950 via-[#2e203b] to-[#1f142a] tracking-tighter ${
+        {/* <ShineBorder
+      className="relative size-48 rounded-lg"
+      color={["#A07CFE", "#FE8FB5", "#FFBE7B"]}
+    > */}
+        <ShineBorder
+        color={["#A07CFE", "#FE8FB5", "#FFBE7B"]}
+          className={`relative p-[4vmin] transition-opacity duration-1000 ease-in-out bg-gradient-to-r from-slate-950/[0.5] via-[#2e203b]/[0.5] to-[#1f142a]/[0.7] bg-clip-padding tracking-tighter size-48 rounded-lg flex flex-col gap-4 text-center ${
             current === index ? "opacity-100 visible" : "opacity-0 invisible"
           }`}
         >
-          <h2 className="text-lg md:text-2xl lg:text-4xl font-semibold  relative">
+          <h2 className="text-lg md:text-xl lg:text-xl font-semibold  relative">
             {title}
           </h2>
           <div className="flex flex-row justify-center gap-2">
+   
             {/* <button className="mt-6  px-4 py-2 w-fit mx-auto sm:text-sm text-black bg-white h-12 border border-transparent text-xs flex justify-center items-center rounded-2xl hover:shadow-lg transition duration-200 shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)]">
               {button}
             </button> */}
@@ -147,8 +152,10 @@ const Slide = ({ slide, index, current, handleSlideClick }: SlideProps) => {
               className="cursor-pointer   "
               onClick={handleOpenDetails}
             />
+           
           </div>
-        </article>
+        </ShineBorder>
+        {/* </ShineBorder> */}
       </li>
     </div>
   );

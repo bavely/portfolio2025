@@ -26,23 +26,15 @@ const config: Config = {
   			slideleft: ' slideleft 0.5s forwards',
   			slideright: 'slideright 0.5s forwards',
   			'background-position-spin': 'background-position-spin 3000ms infinite alternate',
-			shimmer: "shimmer 5s linear infinite",
+  			shimmer: 'shimmer 5s linear infinite',
+  			shine: 'shine var(--duration) infinite linear'
   		},
   		keyframes: {
-			shimmer: {
-				'0%': {
-					"backgroundPosition": "200% 0"
-				},
-				
-			// 	"50% , 75%": {
-			// 		"backgroundPosition": '0 0'
-				  
-			// 	},
-				
-			// "100%": {
-			// 	  "backgroundPosition": "0 0"
-			// 	},
-			  },
+  			shimmer: {
+  				'0%': {
+  					'backgroundPosition': '200% 0'
+  				}
+  			},
   			slideleft: {
   				'0%': {
   					transform: 'translateX(0%)'
@@ -173,6 +165,17 @@ const config: Config = {
   				},
   				'100%': {
   					backgroundPosition: 'bottom center'
+  				}
+  			},
+  			shine: {
+  				'0%': {
+  					'background-position': '0% 0%'
+  				},
+  				'50%': {
+  					'background-position': '100% 100%'
+  				},
+  				to: {
+  					'background-position': '0% 0%'
   				}
   			}
   		},

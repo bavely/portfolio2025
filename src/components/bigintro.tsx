@@ -20,7 +20,9 @@ const BigIntro = ({ children }: { children: React.ReactNode }) => {
         <div className="h-screen min-h-screen items-center justify-center flex lg:flex-row md:flex-row flex-col  animate-fadein duration-1000 ">
 
 <div className="spinner">
-    <div className="spinner1"></div>
+    <div className="spinner1">
+      
+    </div>
 </div>
         </div>
       ) : (

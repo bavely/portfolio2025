@@ -17,11 +17,12 @@
 }
 .details-content {
     @apply items-center justify-center flex flex-col h-full absolute w-full z-[1] text-center left-0 inset-y-0;
-    /* padding: 2rem 5rem 2rem 5rem; */
+
 }
 
 .spinner {
-  background-image: linear-gradient(rgb(186, 66, 255) 35%,rgb(0, 225, 255));
+
+  background-color: transparent;
   width: 100px;
   height: 100px;
   animation: spinning82341 1.7s linear infinite;
@@ -32,7 +33,8 @@
 }
 
 .spinner1 {
-  background-color: rgb(36, 36, 36);
+
+  background-color: transparent;
   width: 100px;
   height: 100px;
   border-radius: 50px;

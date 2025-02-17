@@ -31,8 +31,8 @@ export default function RootLayout({
         <EvervaultCard>
           <ThemeProvider
             attribute="class"
-            defaultTheme="system"
-            enableSystem
+            defaultTheme="dark"
+            // enableSystem
             disableTransitionOnChange
           >
             <ViewTransitions>

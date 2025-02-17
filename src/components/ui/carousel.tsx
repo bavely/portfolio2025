@@ -126,7 +126,7 @@ const Slide = ({ slide, index, current, handleSlideClick }: SlideProps) => {
         </div>
 
         <article
-          className={`relative p-[4vmin] transition-opacity duration-1000 ease-in-out ${
+          className={`relative p-[4vmin] transition-opacity duration-1000 ease-in-out bg-gradient-to-r from-slate-950 via-[#2e203b] to-[#1f142a] tracking-tighter ${
             current === index ? "opacity-100 visible" : "opacity-0 invisible"
           }`}
         >

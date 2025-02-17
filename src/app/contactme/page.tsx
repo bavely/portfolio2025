@@ -44,7 +44,7 @@ function ContactForm() {
   };
 
   return (
-    <NeonGradientCard className="h-[fit-content] max-w-sm items-center justify-center text-center">
+    <NeonGradientCard className="h-[fit-content] max-w-sm items-center justify-center text-center ">
       <CardHeader className="pointer-events-none z-10 whitespace-pre-wrap bg-gradient-to-br from-[#ff2975] from-35% to-[#00FFF1] bg-clip-text text-center text-2xl font-bold leading-none tracking-tighter text-transparent dark:drop-shadow-[0_5px_5px_rgba(0,0,0,0.8)]">
         Get in Touch
       </CardHeader>
@@ -53,7 +53,7 @@ function ContactForm() {
           <Input
             name="name"
             placeholder="Your Name"
-            className="bg-gray-700 border-gray-600 text-white"
+            className="dark:bg-gray-700 dark:border-gray-600 dark:text-white bg-slate-200 border-slate-400 text-black"
             onChange={handleChange}
             required
             value={formData.name}
@@ -62,7 +62,7 @@ function ContactForm() {
             type="email"
             name="email"
             placeholder="Your Email"
-            className="bg-gray-700 border-gray-600 text-white"
+            className="dark:bg-gray-700 dark:border-gray-600 dark:text-white bg-slate-200 border-slate-400 text-black"
             onChange={handleChange}
             required
             value={formData.email}
@@ -70,14 +70,14 @@ function ContactForm() {
           <Textarea
             name="message"
             placeholder="Your Message"
-            className="bg-gray-700 border-gray-600 text-white h-32"
+            className="dark:bg-gray-700 dark:border-gray-600 dark:text-white bg-slate-200 border-slate-400 text-black h-32"
             onChange={handleChange}
             required
             value={formData.message}
           />
           <Button
             type="submit"
-            className="w-full bg-indigo-600 hover:bg-indigo-500"
+            className="inline-flex h-12  animate-shimmer w-full items-center justify-center rounded-md border border-slate-800 bg-[linear-gradient(110deg,#000103,45%,#1e2631,55%,#000103)] bg-[length:200%_100%] px-6 font-medium text-slate-400 transition-colors focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2 focus:ring-offset-slate-50"
             disabled={loading}
           >
             {loading ? "Sending..." : "Send Message"}
@@ -94,13 +94,13 @@ export default function Contct() {
       <section className="h-screen min-h-screen w-screen flex flex-col items-center justify-center animate-fadein duration-1000 z-10">
         <ContactForm />
         <div className="flex mt-6 space-x-6">
-          <a href="mailto:bavlesamy@gmail.com" className="text-gray-400 hover:text-white">
+          <a href="mailto:bavlesamy@gmail.com" className="dark:text-gray-400 dark:hover:text-white text-[#1f142a] hover:text-black">
             <Mail size={24} />
           </a>
-          <a href="https://www.linkedin.com/in/bavelytawfik" target="_blank" className="text-gray-400 hover:text-white">
+          <a href="https://www.linkedin.com/in/bavelytawfik" target="_blank" className="dark:text-gray-400 dark:hover:text-white text-[#1f142a] hover:text-black">
             <Linkedin size={24} />
           </a>
-          <a href="https://github.com/bavely" target="_blank" className="text-gray-400 hover:text-white">
+          <a href="https://github.com/bavely" target="_blank" className="dark:text-gray-400 dark:hover:text-white text-[#1f142a] hover:text-black">
             <Github size={24} />
           </a>
         </div>

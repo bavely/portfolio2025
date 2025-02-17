@@ -25,9 +25,24 @@ const config: Config = {
   			'shiny-text': 'shiny-text 8s infinite',
   			slideleft: ' slideleft 0.5s forwards',
   			slideright: 'slideright 0.5s forwards',
-  			'background-position-spin': 'background-position-spin 3000ms infinite alternate'
+  			'background-position-spin': 'background-position-spin 3000ms infinite alternate',
+			shimmer: "shimmer 5s linear infinite",
   		},
   		keyframes: {
+			shimmer: {
+				'0%': {
+					"backgroundPosition": "200% 0"
+				},
+				
+			// 	"50% , 75%": {
+			// 		"backgroundPosition": '0 0'
+				  
+			// 	},
+				
+			// "100%": {
+			// 	  "backgroundPosition": "0 0"
+			// 	},
+			  },
   			slideleft: {
   				'0%': {
   					transform: 'translateX(0%)'

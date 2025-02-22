@@ -1,17 +1,29 @@
-// import fs from 'fs';
-// import mammoth from 'mammoth';
-// import path from 'path';
+"use server";
+import fs from "fs";
+import path from "path";
 
-// export default async function handler(file: any) {
-//   try {
+export async function upload(formData: FormData) {
+  const file = formData.get("file") as File;
 
+  if (!file) {
+    throw new Error("No file provided");
+  }
 
-//     const result = await mammoth.extractRawText({ file }); // or extractHTML
-//     const text = result.value;
+  // Convert file to Buffer
+  const arrayBuffer = await file.arrayBuffer();
+  const buffer = Buffer.from(arrayBuffer);
 
-//     res.status(200).json({ text });
-//   } catch (error) {
-//     console.error(error);
-//     res.status(500).json({ error: 'Failed to read or process the file' });
-//   }
-// }
+  // Define the file save location (adjust as needed)
+  const uploadDir = path.join(process.cwd(), "public/uploads");
+  const filePath = path.join(uploadDir, "resume.pdf");
+
+  // Ensure the directory exists
+  if (!fs.existsSync(uploadDir)) {
+    fs.mkdirSync(uploadDir, { recursive: true });
+  }
+
+  // Write the file to the server
+  fs.writeFileSync(filePath, buffer);
+
+  return { message: "File uploaded successfully", path: `/uploads/resume.docx` };
+}

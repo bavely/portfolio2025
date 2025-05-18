@@ -126,6 +126,18 @@ const Portfolio = () => {
           Text: "WIZEAS is a website for WIZEAS. WIZEAS is a web development company located in Austin, Texas. I developed, hosted and maintained this website.",
           Tech: [ "ReactJS", "Tailwind CSS", "Shadcn UI", "CSS", "HTML", "Javascript", "NodeJS", "ExpressJS"  ]
       }
+    },
+    {
+      title: "Pavli Tawfik Portfolio",
+      
+      src: "/images/p1.png",
+      gitHub: "https://github.com/bavely/Portfolio2023",
+      live: "https://old.pavli-tawfik.com/",
+      about: {
+          Images:["/images/p1.png", "/images/p2.png", "/images/p3.png", "/images/p4.png"],
+          Text: "This is my older version of my portfolio website.",
+          Tech: [ "ReactJS", "Bootstrap", "Material UI", "CSS", "HTML", "Javascript", "NodeJS", "ExpressJS"  ]
+      }
     }
   ];
   const handleCurrentSlide = (index: number) => {

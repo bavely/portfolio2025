@@ -48,6 +48,7 @@ export async function submitContactForm(
     formData: { name: string; email: string; message: string },
     token: string
 ) {
+
     const RECAPTCHA_SECRET_KEY = process.env.NEXT_PUBLIC_RECAPTCHA_SECRET_KEY; // Replace with your actual secret key
 
     // Verify reCAPTCHA token
@@ -56,7 +57,7 @@ export async function submitContactForm(
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
         body: `secret=${RECAPTCHA_SECRET_KEY}&response=${token}`,
     });
-
+ 
     const recaptchaData = await recaptchaRes.json();
 
     if (!recaptchaData.success || recaptchaData.score < 0.5) {
@@ -65,10 +66,12 @@ export async function submitContactForm(
 
     // Simulating email sending (replace with actual email logic)
 
-
+console.log("executing...2");
     try {
         await saveContactForm(formData);
+        console.log("executing...3");
         await sendEmail(formData);
+        console.log("executing...4");
         return { success: true, message: "Message sent successfully!" };
     } catch (error) {
         console.error("Error adding document: ", error);

@@ -8,8 +8,9 @@ import { CardContent, CardHeader } from "@/components/ui/card";
 import { Mail, Linkedin, Github, FileUser } from "lucide-react";
 import { NeonGradientCard } from "@/components/ui/neon-gradient-card";
 import { GoogleReCaptchaProvider, useGoogleReCaptcha } from "react-google-recaptcha-v3";
-import {submitContactForm} from "./actions"; // Server action
+//import {submitContactForm} from "./actions"; // Server action
 import Link from "next/link";
+import { sendEmail } from "./actions";
 const RECAPTCHA_SITE_KEY = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY; // Replace with actual reCAPTCHA site key
 
 function ContactForm() {
@@ -23,24 +24,36 @@ function ContactForm() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
     if (!executeRecaptcha) {
+      console.log("reCAPTCHA is not ready yet.");
       alert("reCAPTCHA is not ready yet.");
       return;
     }
-
+console.log("recaptcha is ready");
     setLoading(true);
     const token = await executeRecaptcha("contact_form");
 
-    const result = await submitContactForm(formData, token); // Call server action
+    console.log(token);
 
-    setLoading(false);
-
-    if (result.success) {
+          await sendEmail(formData);
       alert("Message sent successfully!");
-      setFormData({ name: "", email: "", message: "" });
-    } else {
-      alert("Failed to send message. Please try again.");
-    }
+
+    // const result = await submitContactForm(formData, token); // Call server action
+
+    // setLoading(false);
+    // console.log(result);
+    // if (!result) {
+    //   await sendEmail(formData);
+    //   alert("Message sent successfully!");
+    //   return;
+    // }
+    // if (result.success) {
+    //   alert("Message sent successfully!");
+    //   setFormData({ name: "", email: "", message: "" });
+    // } else {
+    //   alert("Failed to send message. Please try again.");
+    // }
   };
 
   return (
@@ -50,7 +63,7 @@ function ContactForm() {
         Get in Touch
       </CardHeader>
       <CardContent>
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form  className="space-y-4">
           <Input
             name="name"
             placeholder="Your Name"
@@ -80,6 +93,7 @@ function ContactForm() {
             type="submit"
             className="inline-flex h-12  animate-shimmer w-full items-center justify-center rounded-md border border-slate-800 bg-[linear-gradient(110deg,#000103,45%,#1e2631,55%,#000103)] bg-[length:200%_100%] px-6 font-medium text-slate-400 transition-colors focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2 focus:ring-offset-slate-50"
             disabled={loading}
+            onClick={handleSubmit}
           >
             {loading ? "Sending..." : "Send Message"}
           </Button>

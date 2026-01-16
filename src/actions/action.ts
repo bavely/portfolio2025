@@ -2,7 +2,7 @@
 
 import { collection, addDoc } from "firebase/firestore";
 import nodemailer from "nodemailer";
-import htmltemplate from "./html";
+import htmltemplate from "../app/contactme/html";
 import { db } from "@/lib/firebaseConfig";
 
 const transporter = nodemailer.createTransport({
@@ -49,22 +49,23 @@ export async function submitContactForm(
     token: string
 ) {
 
-    const RECAPTCHA_SECRET_KEY = process.env.NEXT_PUBLIC_RECAPTCHA_SECRET_KEY; // Replace with your actual secret key
+    // const RECAPTCHA_SECRET_KEY = process.env.NEXT_PUBLIC_RECAPTCHA_SECRET_KEY; // Replace with your actual secret key
 
-    // Verify reCAPTCHA token
-    const recaptchaRes = await fetch(`https://www.google.com/recaptcha/api/siteverify`, {
-        method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: `secret=${RECAPTCHA_SECRET_KEY}&response=${token}`,
-    });
+    // // Verify reCAPTCHA token
+    // const recaptchaRes = await fetch(`https://www.google.com/recaptcha/api/siteverify`, {
+    //     method: "POST",
+    //     headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    //     body: `secret=${RECAPTCHA_SECRET_KEY}&response=${token}`,
+    // });
  
-    const recaptchaData = await recaptchaRes.json();
+    // const recaptchaData = await recaptchaRes.json();
 
-    if (!recaptchaData.success || recaptchaData.score < 0.5) {
-        return { success: false, message: "reCAPTCHA verification failed" };
-    }
+    // if (!recaptchaData.success || recaptchaData.score < 0.5) {
+    //     return { success: false, message: "reCAPTCHA verification failed" };
+    // }
 
     // Simulating email sending (replace with actual email logic)
+console.log(token, "executing...1");
 
 console.log("executing...2");
     try {

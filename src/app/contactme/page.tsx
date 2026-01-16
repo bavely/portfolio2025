@@ -10,7 +10,7 @@ import { NeonGradientCard } from "@/components/ui/neon-gradient-card";
 import { GoogleReCaptchaProvider, useGoogleReCaptcha } from "react-google-recaptcha-v3";
 //import {submitContactForm} from "./actions"; // Server action
 import Link from "next/link";
-import { sendEmail } from "./actions";
+// import { sendEmail, submitContactForm } from "../../actions/action";
 const RECAPTCHA_SITE_KEY = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY; // Replace with actual reCAPTCHA site key
 
 function ContactForm() {
@@ -22,39 +22,65 @@ function ContactForm() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+//   const handleSubmit = async (e: React.FormEvent) => {
+//     e.preventDefault();
     
-    if (!executeRecaptcha) {
-      console.log("reCAPTCHA is not ready yet.");
-      alert("reCAPTCHA is not ready yet.");
-      return;
-    }
-console.log("recaptcha is ready");
-    setLoading(true);
-    const token = await executeRecaptcha("contact_form");
+//     if (!executeRecaptcha) {
+//       console.log("reCAPTCHA is not ready yet.");
+//       alert("reCAPTCHA is not ready yet.");
+//       return;
+//     }
+// console.log("recaptcha is ready");
+//     setLoading(true);
+//     const token = await executeRecaptcha("contact_form");
 
-    console.log(token);
+//     console.log(token);
 
-          await sendEmail(formData);
-      alert("Message sent successfully!");
+    
 
-    // const result = await submitContactForm(formData, token); // Call server action
+//     const result = await submitContactForm(formData, token); // Call server action
 
-    // setLoading(false);
-    // console.log(result);
-    // if (!result) {
-    //   await sendEmail(formData);
-    //   alert("Message sent successfully!");
-    //   return;
-    // }
-    // if (result.success) {
-    //   alert("Message sent successfully!");
-    //   setFormData({ name: "", email: "", message: "" });
-    // } else {
-    //   alert("Failed to send message. Please try again.");
-    // }
-  };
+//     setLoading(false);
+//     console.log(result);
+//     if (!result) {
+//       await sendEmail(formData);
+//       alert("Message sent successfully!");
+//       return;
+//     }
+//     if (result.success) {
+//       alert("Message sent successfully!");
+//       setFormData({ name: "", email: "", message: "" });
+//     } else {
+//       alert("Failed to send message. Please try again.");
+//     }
+//   };
+const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+
+  if (!executeRecaptcha) {
+    alert("reCAPTCHA not ready");
+    return;
+  }
+
+  setLoading(true);
+  const token = await executeRecaptcha("contact_form");
+
+  const res = await fetch("/api/contact", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ ...formData, token }),
+  });
+
+  const result = await res.json();
+  setLoading(false);
+
+  if (result.success) {
+    alert("Message sent successfully!");
+    setFormData({ name: "", email: "", message: "" });
+  } else {
+    alert("Failed to send message.");
+  }
+};
 
   return (
 

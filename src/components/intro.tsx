@@ -31,15 +31,19 @@ const Intro = () => {
       </div>
       <div
         className={
-          `animate-floating ${ isMobile ? "" : theme === "dark"
+          `animate-floating  ${ isMobile ? "" : theme === "dark"
             ? ` backdrop-container  `
             : ` backdrop-container-white`
         }`}
       >
+        
         {isMobile ? (
           <Image src={mypic} alt="backdrop" height={200} width={200} />
         ) : (
-          <Image src={mypic} alt="backdrop"  />
+          <>
+          <div className=" min-h-[43vh]"></div>
+          <Image src={mypic} alt="backdrop"   />
+          </>
         )}
         
       </div>

@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
-import { useMotionValue } from "framer-motion";
+import { useMotionValue, useSpring  } from "framer-motion";
 import React, { useState, useEffect } from "react";
 import { useMotionTemplate, motion } from "framer-motion";
 // import { cn } from "@/lib/utils";
@@ -16,6 +16,9 @@ export const EvervaultCard = ({
 }) => {
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
+
+  const springX = useSpring(mouseX, { stiffness: 80, damping: 25 });
+const springY = useSpring(mouseY, { stiffness: 80, damping: 25 });
 
   const [randomString, setRandomString] = useState("");
 
@@ -46,8 +49,8 @@ export const EvervaultCard = ({
         className="group/card rounded-lg w-full relative overflow-hidden bg-transparent flex items-center justify-center h-full"
       >
         <CardPattern
-          mouseX={mouseX}
-          mouseY={mouseY}
+          mouseX={springX}
+          mouseY={springY}
           randomString={randomString}
         />
         {children}

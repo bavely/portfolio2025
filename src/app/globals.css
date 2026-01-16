@@ -7,13 +7,13 @@
     @apply block h-0 relative pb-[40%];
 }
 .backdrop-container {
-    @apply block h-full  after:bg-[linear-gradient(_0deg,transparent,transparent_10%,transparent_)] after:content-[""] after:block after:absolute after:inset-0;
+    @apply block   after:bg-[linear-gradient(_0deg,transparent,transparent_10%,transparent_)] after:content-[""] after:block after:absolute after:inset-0;
 }
 .details-container-white {
     @apply block h-0 relative bg-[rgb(202,202,201,1)] pb-[40%];
 }
 .backdrop-container-white {
-    @apply block h-full  after:bg-[linear-gradient(_0deg,transparent,transparent_70%,transparent_)] after:content-[""] after:block after:absolute after:inset-0;
+    @apply block   after:bg-[linear-gradient(_0deg,transparent,transparent_70%,transparent_)] after:content-[""] after:block after:absolute after:inset-0;
 }
 .details-content {
     @apply items-center justify-center flex flex-col h-full absolute w-full z-[1] text-center left-0 inset-y-0;

@@ -8,10 +8,11 @@ import { CardContent, CardHeader } from "@/components/ui/card";
 import { Mail, Linkedin, Github, FileUser } from "lucide-react";
 import { NeonGradientCard } from "@/components/ui/neon-gradient-card";
 import { GoogleReCaptchaProvider, useGoogleReCaptcha } from "react-google-recaptcha-v3";
-//import {submitContactForm} from "./actions"; // Server action
+import { submitContactForm } from "../../actions/action";
 import Link from "next/link";
-// import { sendEmail, submitContactForm } from "../../actions/action";
-const RECAPTCHA_SITE_KEY = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY; // Replace with actual reCAPTCHA site key
+import { toast, Toaster } from "sonner";
+
+const RECAPTCHA_SITE_KEY = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY;
 
 function ContactForm() {
   const { executeRecaptcha } = useGoogleReCaptcha();
@@ -22,74 +23,59 @@ function ContactForm() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-//   const handleSubmit = async (e: React.FormEvent) => {
-//     e.preventDefault();
-    
-//     if (!executeRecaptcha) {
-//       console.log("reCAPTCHA is not ready yet.");
-//       alert("reCAPTCHA is not ready yet.");
-//       return;
-//     }
-// console.log("recaptcha is ready");
-//     setLoading(true);
-//     const token = await executeRecaptcha("contact_form");
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
 
-//     console.log(token);
+    if (!executeRecaptcha) {
+      toast.error("reCAPTCHA not ready. Please try again.");
+      return;
+    }
 
-    
+    // Basic client-side validation
+    if (!formData.name.trim() || !formData.email.trim() || !formData.message.trim()) {
+      toast.error("Please fill in all fields");
+      return;
+    }
 
-//     const result = await submitContactForm(formData, token); // Call server action
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formData.email)) {
+      toast.error("Please enter a valid email address");
+      return;
+    }
 
-//     setLoading(false);
-//     console.log(result);
-//     if (!result) {
-//       await sendEmail(formData);
-//       alert("Message sent successfully!");
-//       return;
-//     }
-//     if (result.success) {
-//       alert("Message sent successfully!");
-//       setFormData({ name: "", email: "", message: "" });
-//     } else {
-//       alert("Failed to send message. Please try again.");
-//     }
-//   };
-const handleSubmit = async (e: React.FormEvent) => {
-  e.preventDefault();
+    // Validate message length
+    if (formData.message.length < 10) {
+      toast.error("Message must be at least 10 characters long");
+      return;
+    }
 
-  if (!executeRecaptcha) {
-    alert("reCAPTCHA not ready");
-    return;
-  }
+    setLoading(true);
+    try {
+      const token = await executeRecaptcha("contact_form");
+      const result = await submitContactForm(formData, token);
 
-  setLoading(true);
-  const token = await executeRecaptcha("contact_form");
-
-  const res = await fetch("/api/contact", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ ...formData, token }),
-  });
-
-  const result = await res.json();
-  setLoading(false);
-
-  if (result.success) {
-    alert("Message sent successfully!");
-    setFormData({ name: "", email: "", message: "" });
-  } else {
-    alert("Failed to send message.");
-  }
-};
+      if (result.success) {
+        toast.success("Message sent successfully!");
+        setFormData({ name: "", email: "", message: "" });
+      } else {
+        toast.error(result.message || "Failed to send message. Please try again.");
+      }
+    } catch (error) {
+      console.error("Form submission error:", error);
+      toast.error("An unexpected error occurred. Please try again later.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
-
     <NeonGradientCard className="h-[fit-content] max-w-sm items-center justify-center text-center ">
       <CardHeader className="pointer-events-none z-10 whitespace-pre-wrap bg-gradient-to-br from-[#ff2975] from-35% to-[#00FFF1] bg-clip-text text-center text-2xl font-bold leading-none tracking-tighter text-transparent dark:drop-shadow-[0_5px_5px_rgba(0,0,0,0.8)]">
         Get in Touch
       </CardHeader>
       <CardContent>
-        <form  className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-4">
           <Input
             name="name"
             placeholder="Your Name"
@@ -119,30 +105,29 @@ const handleSubmit = async (e: React.FormEvent) => {
             type="submit"
             className="inline-flex h-12  animate-shimmer w-full items-center justify-center rounded-md border border-slate-800 bg-[linear-gradient(110deg,#000103,45%,#1e2631,55%,#000103)] bg-[length:200%_100%] px-6 font-medium text-slate-400 transition-colors focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2 focus:ring-offset-slate-50"
             disabled={loading}
-            onClick={handleSubmit}
           >
             {loading ? "Sending..." : "Send Message"}
           </Button>
         </form>
       </CardContent>
     </NeonGradientCard>
-
   );
 }
 
 export default function Contct() {
   return (
     <GoogleReCaptchaProvider reCaptchaKey={RECAPTCHA_SITE_KEY || ""}>
+      <Toaster position="top-center" richColors />
       <section className="h-screen min-h-screen w-screen flex flex-col items-center justify-center animate-fadein duration-1000 z-10">
         <ContactForm />
         <div className="flex mt-6 space-x-6">
           <a href="mailto:bavlesamy@gmail.com" className="dark:text-gray-400 dark:hover:text-white text-[#1f142a] hover:text-black">
             <Mail size={24} />
           </a>
-          <a href="https://www.linkedin.com/in/bavelytawfik" target="_blank" className="dark:text-gray-400 dark:hover:text-white text-[#1f142a] hover:text-black">
+          <a href="https://www.linkedin.com/in/bavelytawfik" target="_blank" rel="noopener noreferrer" className="dark:text-gray-400 dark:hover:text-white text-[#1f142a] hover:text-black">
             <Linkedin size={24} />
           </a>
-          <a href="https://github.com/bavely" target="_blank" className="dark:text-gray-400 dark:hover:text-white text-[#1f142a] hover:text-black">
+          <a href="https://github.com/bavely" target="_blank" rel="noopener noreferrer" className="dark:text-gray-400 dark:hover:text-white text-[#1f142a] hover:text-black">
             <Github size={24} />
           </a>
           <Link href="/resume" target="_blank" className="dark:text-gray-400 dark:hover:text-white text-[#1f142a] hover:text-black">

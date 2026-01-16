@@ -112,7 +112,7 @@ const Skills = () => {
       }
       return prev + 10;
     };
-    setVal(handleIncrement);
+    setVal((prev) => handleIncrement(prev));
     const interval = setInterval(() => setVal(handleIncrement), 100);
     return () => clearInterval(interval);
   }, [])

@@ -51,7 +51,7 @@ export function AnimatedModal({ slide }: { slide: SlideData }) {
         <div className="flex justify-center items-center">
           {currentSlide.about.Images.map((image, idx) => (
             <motion.div
-              key={"images" + idx}
+              key={image + idx}
               style={{
                 rotate: Math.random() * 20 - 10,
               }}

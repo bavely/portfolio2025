@@ -43,6 +43,22 @@ const Portfolio = () => {
       }
     },
     {
+      title: "Lab Results Explainer",
+      src: "/images/lab-results.png",
+      gitHub: "https://github.com/bavely/Lab-Results-Explainer",
+      live: "https://labs.pavli-tawfik.com/",
+      about: {
+          Images:["/images/lab-results.png", "/images/lab-results1.png", "/images/lab-results2.png", "/images/lab-results3.png"],
+          Text: `A patient-friendly starter application for explaining common lab results in plain language. This version uses:
+
+Frontend: React, TypeScript, Vite, Tailwind CSS, shadcn-style UI components, react-hook-form, Zod, TanStack Query
+Backend: Python, Flask, Pydantic, pypdf
+Core logic: deterministic lab-range classification, normalization, combination flags, mock explanations, and an Azure AI Foundry Agent provider
+Educational use only. This application does not provide medical advice, diagnosis, or treatment. Lab results should always be interpreted by a licensed healthcare professional.`,
+          Tech: ["React", "TypeScript", "Vite", "Tailwind CSS", "shadcn-style UI components", "react-hook-form", "Zod", "TanStack Query", "Python", "Flask", "Pydantic", "pypdf", "Azure AI Foundry Agent provider"]
+      }
+    },
+    {
       title: "Pawinpaw",
       
       src: "/images/register.JPG",

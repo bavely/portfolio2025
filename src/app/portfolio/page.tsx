@@ -45,7 +45,7 @@ const Portfolio = () => {
     {
       title: "Lab Results Explainer",
       src: "/images/lab-results.png",
-      gitHub: "https://github.com/bavely/Lab-Results-Explainer",
+      gitHub: "https://github.com/bavely/lab_results_explainer",
       live: "https://labs.pavli-tawfik.com/",
       about: {
           Images:["/images/lab-results.png", "/images/lab-results1.png", "/images/lab-results2.png", "/images/lab-results3.png"],

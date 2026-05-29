@@ -35,8 +35,6 @@ Personal portfolio website built with Next.js, TypeScript, Tailwind CSS, Firebas
 | `/portfolio` | Project carousel and detail modals |
 | `/contactme` | Contact form and external profile links |
 | `/resume` | Embedded resume PDF viewer |
-| `/private` | Password-protected contact submissions table |
-| `/resumeimport` | Password-protected resume PDF upload |
 | `/api/contact` | Contact form API endpoint that saves messages to Firestore |
 
 ## Getting Started

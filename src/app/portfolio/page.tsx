@@ -59,6 +59,17 @@ Educational use only. This application does not provide medical advice, diagnosi
       }
     },
     {
+      title: "HealthLine",
+      src: "/images/healthline.png",
+      gitHub: "https://github.com/bavely/healthline",
+      live: "https://healthline.pavli-tawfik.com/",
+      about: {
+          Images:["/images/healthline.png", "/images/healthline1.png", "/images/healthline2.png", "/images/healthline3.png"],
+          Text: `HealthLine is a FHIR Patient Timeline Viewer that helps users search for patients, review clinical history in chronological order, and generate a plain-language AI summary of the available record. It connects a React/TypeScript frontend to a Node/Express API that searches the public HAPI FHIR R4 sandbox, normalizes clinical resources into a focused timeline, and uses OpenAI only for optional patient summaries.`,
+          Tech: ["React", "TypeScript", "Tailwind CSS", "REST API", "NodeJS", "ExpressJS", "OpenAI API", "FHIR", "HAPI FHIR R4 sandbox", "Shadcn/ui", "Jest", "React Testing Library" , "GitHub Actions" ]
+      }
+    },
+    {
       title: "Pawinpaw",
       
       src: "/images/register.JPG",

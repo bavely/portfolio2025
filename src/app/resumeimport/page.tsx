@@ -2,6 +2,7 @@
 import React, { useState } from "react";
 import { FileUpload } from "@/components/ui/file-upload";
 import { upload } from "./action";
+import { toast, Toaster } from "sonner";
 
 const ResumeImporter = () => {
 
@@ -15,10 +16,11 @@ const ResumeImporter = () => {
     formData.append("file", file);
 
     try {
-      const response = await upload(formData);
-      console.log("File uploaded successfully:", response);
+      await upload(formData);
+      toast.success("File uploaded successfully!");
     } catch (error) {
       console.error("Error uploading file:", error);
+      toast.error("Failed to upload file. Please try again.");
     }
   };
 
@@ -27,35 +29,39 @@ const ResumeImporter = () => {
           e.preventDefault();
           if (password === process.env.NEXT_PUBLIC_PRIVATE) {
               setAutorized(true);
+              toast.success("Access granted!");
           }else{
               setAutorized(false);
-              alert("Sorry, authorized personnel only :).");
+              toast.error("Sorry, authorized personnel only.");
           }
       }
 
   return (
-    <section className="h-screen min-h-screen w-full items-center justify-center  flex lg:flex-row md:flex-row flex-col animate-fadein duration-1000 z-10 p-10 ">
-        {autorized ? (
-    <div className="w-full max-w-4xl mx-auto min-h-96 border border-dashed bg-white dark:bg-black border-neutral-200 dark:border-neutral-800 rounded-lg">
-      <FileUpload onChange={handleFileUpload} />
-    </div>  ) : 
-            <div className="flex flex-col  items-center ">
-            <form onSubmit={handleSubmit}>
-                <input
-                className='p-2 '
-                type="password"
-                placeholder="Password"
-                onChange={(e) => {
-                    setPassword(e.target.value);
-                }}
-                />
-                <button type="submit">Submit</button>
-            </form>
-           
-            </div>
-       }
+    <>
+      <Toaster position="top-center" richColors />
+      <section className="h-screen min-h-screen w-full items-center justify-center  flex lg:flex-row md:flex-row flex-col animate-fadein duration-1000 z-10 p-10 ">
+          {autorized ? (
+      <div className="w-full max-w-4xl mx-auto min-h-96 border border-dashed bg-white dark:bg-black border-neutral-200 dark:border-neutral-800 rounded-lg">
+        <FileUpload onChange={handleFileUpload} />
+      </div>  ) : 
+              <div className="flex flex-col  items-center ">
+              <form onSubmit={handleSubmit}>
+                  <input
+                  className='p-2 '
+                  type="password"
+                  placeholder="Password"
+                  onChange={(e) => {
+                      setPassword(e.target.value);
+                  }}
+                  />
+                  <button type="submit">Submit</button>
+              </form>
+             
+              </div>
+         }
 
-        </section>
+          </section>
+    </>
   );
 };
 

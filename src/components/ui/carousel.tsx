@@ -224,11 +224,11 @@ export default function Carousel({ slides, currentSlide }: CarouselProps) {
           transform: `translateX(-${current * (100 / slides.length)}%)`,
         }}
       >
-        {slides.map((slide, index) => (
+        {slides.map((slide) => (
           <Slide
-            key={index}
+            key={slide.title}
             slide={slide}
-            index={index}
+            index={slides.indexOf(slide)}
             current={current}
             handleSlideClick={handleSlideClick}
           />

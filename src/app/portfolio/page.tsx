@@ -86,7 +86,7 @@ Educational use only. This application does not provide medical advice, diagnosi
       
       src: "/images/Login.png",
       gitHub: "https://github.com/bavely/React-Messenger",
-      live: "/pagenotfound",
+      live: "", // not publicly deployed
       about: {
           Images:[ "/images/Login.png", "/images/chathistory.png", "/images/chat.png", "/images/profile.png"],
           Text: "React messenger is a place holder name of a messaging application I am developing as a private project. It is still under planning and development. The messenger will allow users with the same interests to communicate , chat and create groups under different topics.",
@@ -122,7 +122,7 @@ Educational use only. This application does not provide medical advice, diagnosi
       title: "RIVER'S EDGE PHARMACY Website",
       
       src: "/images/re1.png",
-      gitHub: "#",
+      gitHub: "", // closed source
       live: "https://www.repharmacy.com/",
       about: {
           Images:["/images/re1.png", "/images/re2.png", "/images/re3.png", "/images/re4.png"],
@@ -134,7 +134,7 @@ Educational use only. This application does not provide medical advice, diagnosi
       title: "AMERICAN COURIER SERVICES Website",
       
       src: "/images/ac1.png",
-      gitHub: "#",
+      gitHub: "", // closed source
       live: "https://american-courier.com/",
       about: {
           Images:["/images/ac1.png", "/images/ac2.png", "/images/ac3.png", "/images/ac4.png"],
@@ -146,7 +146,7 @@ Educational use only. This application does not provide medical advice, diagnosi
       title: "WIZEAS Website",
       
       src: "/images/w.png",
-      gitHub: "#",
+      gitHub: "", // closed source
       live: "https://wizeas.com/",
       about: {
           Images:["/images/w.png", "/images/w2.png", "/images/w3.png", "/images/w4.png", "/images/w5.png", "/images/w6.png", "/images/w7.png", "/images/w8.png"],

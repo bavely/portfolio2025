@@ -1,31 +1,29 @@
 "use client"
 
 import { ColumnDef } from "@tanstack/react-table"
+import type { ContactRecord } from "@/lib/contact-input"
 
-// This type is used to define the shape of our data.
-// You can use a Zod schema here if you want.
-export type Contacts = {
-  id: string
-  email: string
-  message: string
-  name: string
-}
+export type { ContactRecord }
 
-export const columns: ColumnDef<Contacts>[] = [
+export const columns: ColumnDef<ContactRecord>[] = [
   {
-    accessorKey: "id",
-    header: "ID",
-  },
-  {
-    accessorKey: "email",
-    header: "Email",
+    accessorKey: "createdAt",
+    header: "Received",
+    cell: ({ row }) => {
+      const value = row.original.createdAt
+      return value ? new Date(value).toLocaleString() : "—"
+    },
   },
   {
     accessorKey: "name",
     header: "Name",
   },
   {
+    accessorKey: "email",
+    header: "Email",
+  },
+  {
     accessorKey: "message",
     header: "Message",
-  }
+  },
 ]

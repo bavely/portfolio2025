@@ -1,54 +1,47 @@
-"use client";
-import React, { useEffect, useState } from "react";
-// import { Worker, Viewer } from "@react-pdf-viewer/core";
-// import "@react-pdf-viewer/core/lib/styles/index.css";
-import { loadDoc } from "./action";
+import type { Metadata } from "next";
 
+// Served straight from public/. The previous version read the file on the server,
+// base64-encoded it and shipped a ~139 KB data URL on every visit (+33% encoding
+// overhead) — for a file the browser can already fetch, cache and range-request
+// from this path.
+const RESUME_PATH = "/uploads/resume.pdf";
 
-const Resume = () => {
-  const [file, setFile] = useState("");
-
-  useEffect(() => {
-    loadDoc().then((data) => {
-      setFile(data);
-    });
-  }, []);
-
-  //     setLoading(true);
-  //     const buffer = await loadDoc();
-  //     Buffer.from(buffer);
-  //     // setDoc(<Document >
-  //     //     <Page
-  //     //       style={{
-  //     //         padding: 40,
-  //     //         paddingTop: 32,
-  //     //       }}
-  //     //     >
-  //     //       <Text>{buffer}</Text>
-  //     //     </Page>
-  //     //   </Document>);
-  //     setLoading(false);
-  //   }
-
-  // useEffect(() => {
-
-  // //   fetchData();
-  // }, []);
-
-  return (
-    <section className="h-screen min-h-screen w-full items-center justify-center  flex lg:flex-col md:flex-col flex-col animate-fadein duration-1000 z-10 p-5 ">
-
-<embed  src={file} width="100%" height="100%" title="Resume PDF" />
-
-      {/* <div className="w-full h-screen flex justify-center items-center"> */}
-        {/* <Worker  workerUrl="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js">
-          <div className="w-full h-full dark:bg-slate-800 mt-40">
-            {file && <Viewer  renderLoader={() => <div>Loading...</div>}  fileUrl={file}  />}
-          </div>
-        </Worker> */}
-      {/* </div> */}
-    </section>
-  );
+export const metadata: Metadata = {
+  title: "Resume | Bavely Tawfik",
+  description: "Resume of Bavely Tawfik, full-stack web developer.",
 };
 
-export default Resume;
+export default function Resume() {
+  return (
+    <section className="z-10 flex h-screen min-h-screen w-full animate-fadein flex-col items-center justify-center p-5 duration-1000">
+      <object
+        data={RESUME_PATH}
+        type="application/pdf"
+        aria-label="Resume of Bavely Tawfik"
+        className="h-full w-full"
+      >
+        {/* Fallback content: <object> renders this when it cannot display the
+            PDF itself, which is the common case on mobile browsers. The old
+            <embed> had no fallback and simply showed an empty grey box. */}
+        <div className="flex h-full w-full flex-col items-center justify-center gap-4 text-center">
+          <p className="text-sm font-bold md:text-lg dark:text-slate-400">
+            Your browser can&apos;t display this PDF inline.
+          </p>
+          <div className="flex flex-wrap items-center justify-center gap-4">
+            <a
+              href={RESUME_PATH}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-blue-500 underline"
+            >
+              Open in a new tab
+            </a>
+            <a href={RESUME_PATH} download className="text-blue-500 underline">
+              Download the PDF
+            </a>
+          </div>
+        </div>
+      </object>
+    </section>
+  );
+}

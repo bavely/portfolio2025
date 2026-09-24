@@ -6,7 +6,7 @@ import {
   IconWorldWww,
 } from "@tabler/icons-react";
 import Link from "next/link";
-import { useState, useRef, useId, useEffect } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useModal } from "../ui/animated-modal";
 import { ShineBorder } from "./shine-border";
 export interface SlideData {
@@ -27,6 +27,14 @@ interface SlideProps {
   current: number;
   handleSlideClick: (index: number) => void;
 }
+
+/**
+ * Some projects have no public repo or no live deployment. Those were previously
+ * given "#" or "/pagenotfound", which rendered a link that opened a blank
+ * duplicate tab or a bare 404 — so treat them as absent instead.
+ */
+const hasLink = (href: string) =>
+  Boolean(href) && href !== "#" && href !== "/pagenotfound";
 
 const Slide = ({ slide, index, current, handleSlideClick }: SlideProps) => {
   const slideRef = useRef<HTMLLIElement>(null);
@@ -142,16 +150,34 @@ const Slide = ({ slide, index, current, handleSlideClick }: SlideProps) => {
             {/* <button className="mt-6  px-4 py-2 w-fit mx-auto sm:text-sm text-black bg-white h-12 border border-transparent text-xs flex justify-center items-center rounded-2xl hover:shadow-lg transition duration-200 shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)]">
               {button}
             </button> */}
-            <Link href={gitHub} target="_blank">
-              <IconBrandGithub />
-            </Link>
-            <Link href={live} target="_blank">
-              <IconWorldWww />
-            </Link>
-            <IconInfoCircle
-              className="cursor-pointer   "
+            {hasLink(gitHub) && (
+              <Link
+                href={gitHub}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={`${title} source on GitHub`}
+              >
+                <IconBrandGithub />
+              </Link>
+            )}
+            {hasLink(live) && (
+              <Link
+                href={live}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={`${title} live site`}
+              >
+                <IconWorldWww />
+              </Link>
+            )}
+            <button
+              type="button"
               onClick={handleOpenDetails}
-            />
+              aria-label={`About ${title}`}
+              className="cursor-pointer"
+            >
+              <IconInfoCircle />
+            </button>
            
           </div>
         </ShineBorder>
@@ -211,12 +237,12 @@ export default function Carousel({ slides, currentSlide }: CarouselProps) {
     currentSlide(index);
   };
 
-  const id = useId();
-
   return (
     <div
       className="relative w-[70vmin] h-[70vmin] mx-auto"
-      aria-labelledby={`carousel-heading-${id}`}
+      role="group"
+      aria-roledescription="carousel"
+      aria-label="Portfolio projects"
     >
       <ul
         className="absolute flex mx-[-4vmin] transition-transform duration-1000 ease-in-out"

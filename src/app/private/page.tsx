@@ -1,61 +1,55 @@
-"use client"
-import React, { useEffect, useState } from 'react'
-import {getData} from "./action"
-import { Contacts, columns } from "./columns"
-import { DataTable } from "./data-table"
-const Private = () => {
-    const [autorized, setAutorized] = useState(false);
-    const [password, setPassword] = useState("");
-    const [data, setData] = useState<Contacts[]>([{
-        id: "",
-        email: "",
-        message: "",
-        name: ""
-    }]);
+import type { Metadata } from "next";
+import { isAdmin } from "@/lib/auth";
+import { listContactForms } from "@/lib/contacts";
+import { AdminLogin } from "@/components/admin-login";
+import { LogoutButton } from "@/components/logout-button";
+import { ContactsTable } from "./contacts-table";
 
-    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
-        if (password === process.env.NEXT_PUBLIC_PRIVATE) {
-            setAutorized(true);
-        }else{
-            setAutorized(false);
-            alert("Sorry, authorized personnel only :).");
-        }
-    }
+export const metadata: Metadata = {
+  title: "Private | Bavely Tawfik",
+  robots: { index: false, follow: false },
+};
 
-    const handlegetData = async () => {
-        const incomingdata : Contacts[] = await getData();
-        setData(incomingdata);
-    }
+// Admin data must never be cached or prerendered. Reading cookies already opts
+// this route into dynamic rendering; stated explicitly so it cannot regress.
+export const dynamic = "force-dynamic";
 
-    useEffect(() => {
-        handlegetData();
-    }, []);
+/**
+ * Server component: the submissions are read *after* the session check, so an
+ * unauthenticated visitor's response contains no contact data at all.
+ *
+ * The previous version fetched every submission in a `useEffect` on mount and
+ * only used the password to decide whether to paint the table — the data was
+ * already in the browser's network response for anyone who opened the page.
+ */
+export default async function PrivatePage() {
+  const authorized = await isAdmin();
+
+  if (!authorized) {
+    return (
+      <section className="z-10 flex min-h-screen animate-fadein items-center justify-center p-10 duration-1000">
+        <AdminLogin heading="Authorized personnel only" />
+      </section>
+    );
+  }
+
+  const contacts = await listContactForms();
+
   return (
-    <section className="h-screen min-h-screen w-full items-center justify-center  flex lg:flex-row md:flex-row flex-col animate-fadein duration-1000 z-10 p-10 ">
-        {autorized ? (
-                <div className="container mx-auto py-10  w-full">
-                <DataTable columns={columns} data={data} />
-              </div>
-        ) : 
-            <div className="flex flex-col  items-center ">
-            <form onSubmit={handleSubmit}>
-                <input
-                className='p-2 '
-                type="password"
-                placeholder="Password"
-                onChange={(e) => {
-                    setPassword(e.target.value);
-                }}
-                />
-                <button type="submit">Submit</button>
-            </form>
-           
-            </div>
-       }
+    <section className="z-10 flex min-h-screen animate-fadein flex-col items-center justify-center gap-4 p-10 duration-1000">
+      <div className="container mx-auto flex w-full items-center justify-between gap-4">
+        <h1 className="text-lg font-bold md:text-2xl">
+          Contact messages{" "}
+          <span className="text-sm font-normal text-neutral-500 dark:text-neutral-400">
+            ({contacts.length})
+          </span>
+        </h1>
+        <LogoutButton />
+      </div>
 
-        </section>
-  )
+      <div className="container mx-auto w-full">
+        <ContactsTable data={contacts} />
+      </div>
+    </section>
+  );
 }
-
-export default Private

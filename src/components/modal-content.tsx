@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback, useMemo } from "react";
 import {
   ModalBody,
   ModalContent,
@@ -42,6 +42,13 @@ export function AnimatedModal({ slide }: { slide: SlideData }) {
     setCurrentImage(0);
     setIsViewerOpen(false);
   };
+
+  // Computed once per project instead of inline during render: previously every
+  // re-render produced new angles and the whole stack of thumbnails jumped.
+  const rotations = useMemo(
+    () => currentSlide.about.Images.map(() => Math.random() * 20 - 10),
+    [currentSlide]
+  );
   return (
     <ModalBody>
       <ModalContent className="overflow-y-scroll">
@@ -53,7 +60,7 @@ export function AnimatedModal({ slide }: { slide: SlideData }) {
             <motion.div
               key={"images" + idx}
               style={{
-                rotate: Math.random() * 20 - 10,
+                rotate: rotations[idx] ?? 0,
               }}
               whileHover={{
                 scale: 1.1,
@@ -69,7 +76,7 @@ export function AnimatedModal({ slide }: { slide: SlideData }) {
             >
               <Image
                 src={image}
-                alt="bali images"
+                alt={`${currentSlide.title} screenshot ${idx + 1}`}
                 width="500"
                 height="500"
                 className="rounded-lg h-20 w-20 md:h-40 md:w-40 object-cover flex-shrink-0"

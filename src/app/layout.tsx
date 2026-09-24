@@ -61,7 +61,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={` ${exo2.className} antialiased dark:bg-black dark:text-[#f8fafc] bg-[#f1f5f9] text-[#020617] scrollbar`}
+        className={`${exo2.className} antialiased dark:text-[#f8fafc] text-[#020617]`}
       >
         <Seo />
         <EvervaultCard>

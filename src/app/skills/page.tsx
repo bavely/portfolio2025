@@ -106,14 +106,16 @@ const Skills = () => {
 
 
   useEffect(() => {
-    const handleIncrement = (prev: number) => {
-      if (prev === 100) {
-        return 100;
-      }
-      return prev + 10;
-    };
-    setVal(handleIncrement);
-    const interval = setInterval(() => setVal(handleIncrement), 100);
+    const interval = setInterval(() => {
+      setVal((prev) => {
+        const next = prev + 10;
+        // The gauges finish filling after ~1s; stop the timer instead of
+        // leaving it firing for the lifetime of the page.
+        if (next >= 100) clearInterval(interval);
+        return Math.min(next, 100);
+      });
+    }, 100);
+
     return () => clearInterval(interval);
   }, [])
 

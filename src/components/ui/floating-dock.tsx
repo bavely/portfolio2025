@@ -10,8 +10,23 @@ import {
   useTransform,
 } from "framer-motion";
 import { Link } from 'next-view-transitions'
+import { usePathname } from "next/navigation";
 
 import { useRef, useState } from "react";
+
+type DockItem = { title: string; icon: React.ReactNode; href: string };
+
+/**
+ * True when `href` is the page currently being viewed.
+ *
+ * "/" has to match exactly, or it would light up on every route.
+ */
+function useIsActive() {
+  const pathname = usePathname();
+
+  return (href: string) =>
+    href === "/" ? pathname === "/" : pathname === href || pathname.startsWith(`${href}/`);
+}
 
 
 export const FloatingDock = ({
@@ -19,7 +34,7 @@ export const FloatingDock = ({
   desktopClassName,
   mobileClassName,
 }: {
-  items: { title: string; icon: React.ReactNode; href: string }[];
+  items: DockItem[];
   desktopClassName?: string;
   mobileClassName?: string;
 }) => {
@@ -35,16 +50,19 @@ const FloatingDockMobile = ({
   items,
   className,
 }: {
-  items: { title: string; icon: React.ReactNode; href: string }[];
+  items: DockItem[];
   className?: string;
 }) => {
   const [open, setOpen] = useState(false);
+  const isActive = useIsActive();
+
   return (
     <div className={cn("relative block md:hidden", className)}>
       <AnimatePresence>
         {open && (
           <motion.div
             layoutId="nav"
+            id="mobile-dock-items"
             className="absolute bottom-full mb-2 inset-x-0 flex flex-col gap-2"
           >
             {items.map((item, idx) => (
@@ -67,7 +85,17 @@ const FloatingDockMobile = ({
                 <Link
                   href={item.href}
                   key={item.title}
-                  className="h-10 w-10 rounded-full bg-gray-50 dark:bg-neutral-900 flex items-center justify-center"
+                  // Icon-only links have no text, so the accessible name has to
+                  // come from here; the hover tooltip is invisible to screen
+                  // readers and to anyone navigating by keyboard.
+                  aria-label={item.title}
+                  aria-current={isActive(item.href) ? "page" : undefined}
+                  className={cn(
+                    "h-10 w-10 rounded-full flex items-center justify-center",
+                    isActive(item.href)
+                      ? "bg-indigo-100 ring-2 ring-indigo-500 dark:bg-indigo-950"
+                      : "bg-gray-50 dark:bg-neutral-900"
+                  )}
                 >
                   <div className="h-4 w-4">{item.icon}</div>
                 </Link>
@@ -77,7 +105,11 @@ const FloatingDockMobile = ({
         )}
       </AnimatePresence>
       <button
+        type="button"
         onClick={() => setOpen(!open)}
+        aria-label={open ? "Close navigation" : "Open navigation"}
+        aria-expanded={open}
+        aria-controls="mobile-dock-items"
         className="h-10 w-10 rounded-full bg-gray-50 dark:bg-neutral-800 flex items-center justify-center"
       >
         <IconLayoutNavbarCollapse className="h-5 w-5 text-neutral-500 dark:text-neutral-400" />
@@ -90,10 +122,12 @@ const FloatingDockDesktop = ({
   items,
   className,
 }: {
-  items: { title: string; icon: React.ReactNode; href: string }[];
+  items: DockItem[];
   className?: string;
 }) => {
   const mouseX = useMotionValue(Infinity);
+  const isActive = useIsActive();
+
   return (
     <motion.div
       onMouseMove={(e) => mouseX.set(e.pageX)}
@@ -105,7 +139,12 @@ const FloatingDockDesktop = ({
       )}
     >
       {items.map((item) => (
-        <IconContainer mouseX={mouseX} key={item.title} {...item} />
+        <IconContainer
+          mouseX={mouseX}
+          key={item.title}
+          active={isActive(item.href)}
+          {...item}
+        />
       ))}
     </motion.div>
   );
@@ -116,11 +155,10 @@ function IconContainer({
   title,
   icon,
   href,
-}: {
+  active,
+}: DockItem & {
   mouseX: MotionValue;
-  title: string;
-  icon: React.ReactNode;
-  href: string;
+  active: boolean;
 }) {
   const ref = useRef<HTMLDivElement>(null);
 
@@ -166,13 +204,27 @@ function IconContainer({
 
 
   return (
-    <Link href={href} >
+    <Link
+      href={href}
+      // The icon is the only child, so without this the link has no accessible
+      // name at all. The tooltip below only exists on hover.
+      aria-label={title}
+      aria-current={active ? "page" : undefined}
+      onFocus={() => setHovered(true)}
+      onBlur={() => setHovered(false)}
+      className="rounded-full focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500"
+    >
       <motion.div
         ref={ref}
         style={{ width, height }}
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
-        className="aspect-square rounded-full bg-gray-200 dark:bg-neutral-800 flex items-center justify-center relative"
+        className={cn(
+          "aspect-square rounded-full flex items-center justify-center relative",
+          active
+            ? "bg-indigo-100 ring-2 ring-indigo-500 dark:bg-indigo-950"
+            : "bg-gray-200 dark:bg-neutral-800"
+        )}
       >
         <AnimatePresence>
           {hovered && (

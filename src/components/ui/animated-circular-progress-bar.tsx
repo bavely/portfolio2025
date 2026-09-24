@@ -1,9 +1,67 @@
+"use client";
+
+import { useState } from "react";
 import { cn } from "@/lib/utils";
 import azure from "../../assets/Microsoft_Azure_Logo.svg"
 import mssql from "../../assets/microsoft-sql-server.svg"
 import agile from "../../assets/agile.svg"
 import nexus from "../../assets/45704111.png"
 import Image from "next/image";
+
+/** Brands that Simple Icons does not carry, drawn from local assets instead. */
+const LOCAL_ICONS: Record<string, typeof azure> = {
+  azure,
+  mssql,
+  agile,
+  nexus,
+};
+
+const ICON_CLASSES =
+  "bg-black/[0.19] dark:bg-white/[0.27] backdrop-blur-md rounded-full p-1";
+
+/**
+ * A skill's logo, with a graceful fallback.
+ *
+ * Simple Icons has removed several brands over time (OpenAI, AWS and VS Code
+ * among them, for trademark reasons), and a removed slug returns 404. Without an
+ * onError handler that left a silent broken-image glyph, so fall back to the
+ * skill's initial instead.
+ */
+function SkillIcon({ slug, name }: { slug: string; name: string }) {
+  const [failed, setFailed] = useState(false);
+  const local = LOCAL_ICONS[slug];
+
+  if (local) {
+    return <Image src={local} alt="" width="30" height="30" className={ICON_CLASSES} />;
+  }
+
+  if (failed) {
+    return (
+      <span
+        aria-hidden="true"
+        className={cn(
+          ICON_CLASSES,
+          "flex h-[30px] w-[30px] items-center justify-center text-xs font-bold uppercase"
+        )}
+      >
+        {name.charAt(0)}
+      </span>
+    );
+  }
+
+  return (
+    // eslint-disable-next-line @next/next/no-img-element
+    <img
+      src={`https://cdn.simpleicons.org/${slug.toLowerCase()}`}
+      alt=""
+      width="30"
+      height="30"
+      loading="lazy"
+      onError={() => setFailed(true)}
+      className={ICON_CLASSES}
+    />
+  );
+}
 interface AnimatedCircularProgressBarProps {
   max: number;
   value: number;
@@ -112,21 +170,9 @@ slug
       >
 
 
-        <span className="items-center justify-center flex ">     
-          {slug === "azure" ? <Image src={azure} alt="" width="30" height="30" className="bg-black/[0.19] dark:bg-white/[0.17] backdrop-blur-md rounded-full p-1"/> : 
-          slug === "mssql" ? <Image src={mssql} alt="" width="30" height="30" className="bg-black/[0.19] dark:bg-white/[0.17] backdrop-blur-md rounded-full p-1"/> : 
-          slug === "agile" ? <Image src={agile} alt="" width="30" height="30" className="bg-black/[0.19] dark:bg-white/[0.17] backdrop-blur-md rounded-full p-1"/> : 
-          slug === "nexus" ? <Image src={nexus} alt="" width="30" height="30" className="bg-black/[0.19] dark:bg-white/[0.17] backdrop-blur-md rounded-full p-1"/> :
-          // eslint-disable-next-line @next/next/no-img-element
-          <img 
-          src={`https://cdn.simpleicons.org/${slug.toLowerCase()}/${slug.toLowerCase()}`} 
-          alt={""} 
-          width="30" 
-          height="30" 
-          className="bg-black/[0.19] dark:bg-white/[0.27] backdrop-blur-md rounded-full p-1"
-        />
-          }
- </span>
+        <span className="items-center justify-center flex ">
+          <SkillIcon slug={slug} name={name} />
+        </span>
 
         {currentPercent}% <br />
         <span className="text-sm font-semibold">{name}</span>

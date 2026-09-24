@@ -75,13 +75,13 @@ export async function POST(req: Request) {
   }
 
   // Best effort, and deliberately after the save: the message is already stored,
-  // so a mail failure must not make the visitor resubmit and duplicate it. Both
-  // are awaited rather than fired and forgotten, because a serverless function
-  // stops executing once the response is returned.
-  await Promise.allSettled([
-    notifyOwnerOfSubmission(validated.data),
-    sendAcknowledgementEmail(validated.data),
-  ]);
+  // so a mail failure must not make the visitor resubmit and duplicate it. Send
+  // the owner notification first so a rejected login is attempted and logged
+  // only once instead of producing two identical AUTH failures in parallel.
+  const notification = await notifyOwnerOfSubmission(validated.data);
+  if (!notification.authenticationFailed) {
+    await sendAcknowledgementEmail(validated.data);
+  }
 
   return NextResponse.json({ success: true });
 }

@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import { useMotionValue, useSpring  } from "framer-motion";
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import { useMotionTemplate, motion } from "framer-motion";
 // import { cn } from "@/lib/utils";
 import {DotPattern} from "./dot-pattern";
@@ -20,21 +20,39 @@ export const EvervaultCard = ({
   const springX = useSpring(mouseX, { stiffness: 80, damping: 25 });
 const springY = useSpring(mouseY, { stiffness: 80, damping: 25 });
 
-  const [randomString, setRandomString] = useState("");
+  const frameRef = useRef<number | null>(null);
+  const pointerRef = useRef<{
+    element: HTMLDivElement;
+    clientX: number;
+    clientY: number;
+  } | null>(null);
 
   useEffect(() => {
-    const str = generateRandomString(1500);
-    setRandomString(str);
+    return () => {
+      if (frameRef.current !== null) {
+        cancelAnimationFrame(frameRef.current);
+      }
+    };
   }, []);
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  function onMouseMove({ currentTarget, clientX, clientY }: any) {
-    const { left, top } = currentTarget.getBoundingClientRect();
-    mouseX.set(clientX - left);
-    mouseY.set(clientY - top);
+  function onMouseMove(event: React.MouseEvent<HTMLDivElement>) {
+    pointerRef.current = {
+      element: event.currentTarget,
+      clientX: event.clientX,
+      clientY: event.clientY,
+    };
 
-    const str = generateRandomString(1500);
-    setRandomString(str);
+    if (frameRef.current !== null) return;
+
+    frameRef.current = requestAnimationFrame(() => {
+      frameRef.current = null;
+      const pointer = pointerRef.current;
+      if (!pointer) return;
+
+      const { left, top } = pointer.element.getBoundingClientRect();
+      mouseX.set(pointer.clientX - left);
+      mouseY.set(pointer.clientY - top);
+    });
   }
 
   return (
@@ -51,7 +69,6 @@ const springY = useSpring(mouseY, { stiffness: 80, damping: 25 });
         <CardPattern
           mouseX={springX}
           mouseY={springY}
-          randomString={randomString}
         />
         {children}
         {/* <div className="relative z-10 flex items-center justify-center">
@@ -65,9 +82,18 @@ const springY = useSpring(mouseY, { stiffness: 80, damping: 25 });
   );
 };
 
-export function CardPattern({ mouseX, mouseY, randomString }: any) {
+export function CardPattern({ mouseX, mouseY }: any) {
   const maskImage = useMotionTemplate`radial-gradient(250px at ${mouseX}px ${mouseY}px, white, transparent)`;
   const style = { maskImage, WebkitMaskImage: maskImage };
+  const textRef = useRef<HTMLParagraphElement>(null);
+
+  // Write the decorative text directly once after hydration. This avoids both
+  // a server/client Math.random mismatch and a root-level React state update.
+  useEffect(() => {
+    if (textRef.current) {
+      textRef.current.textContent = generateRandomString(1500);
+    }
+  }, []);
 
   return (
     <div className="pointer-events-none">
@@ -80,9 +106,11 @@ export function CardPattern({ mouseX, mouseY, randomString }: any) {
       className="absolute inset-0 rounded-xl opacity-0   group-hover/card:opacity-100"
       style={style}
     >
-      <p className="absolute inset-x-0 text-xs h-full break-words whitespace-pre-wrap text-white font-mono font-bold transition duration-500">
-        {randomString}
-      </p>
+      <p
+        ref={textRef}
+        aria-hidden="true"
+        className="absolute inset-x-0 h-full break-words whitespace-pre-wrap text-xs font-mono font-bold text-white transition duration-500"
+      />
       <DotPattern className="absolute inset-0 dark:bg-[#020617] bg-white "  height={30} width={30} />
     </motion.div>
   </div>

@@ -48,10 +48,11 @@ export function Nav() {
     }
   ];
   return (
-    <div className="flex items-center justify-center  fixed bottom-10 left-0 right-0 z-50">
-      <FloatingDock
-        items={links}
-      />
-    </div>
+    <nav
+      aria-label="Main navigation"
+      className="flex items-center justify-center  fixed bottom-10 left-0 right-0 z-50"
+    >
+      <FloatingDock items={links} />
+    </nav>
   );
 }

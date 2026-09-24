@@ -6,7 +6,7 @@ import { LogoutButton } from "@/components/logout-button";
 import { ContactsTable } from "./contacts-table";
 
 export const metadata: Metadata = {
-  title: "Private | Bavely Tawfik",
+  title: "Private",
   robots: { index: false, follow: false },
 };
 

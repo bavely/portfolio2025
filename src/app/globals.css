@@ -162,6 +162,26 @@
 }
 
 
+/* Scrollbar colours follow the active theme. These were previously hardcoded to
+   the dark palette, so light mode rendered a near-black scrollbar. next-themes
+   puts `.dark` on <html>, so the override hangs off that. */
+:root {
+  --scrollbar-track: #e2e8f0;
+  --scrollbar-thumb: #94a3b8;
+  --scrollbar-thumb-hover: #64748b;
+}
+
+.dark {
+  --scrollbar-track: #020617;
+  --scrollbar-thumb: #1f142a;
+  --scrollbar-thumb-hover: #c0a0b9;
+}
+
+/* Firefox, which has no ::-webkit-scrollbar support. */
+html {
+  scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+}
+
 ::-webkit-scrollbar {
   width: 10px;
   height: 10px;
@@ -169,15 +189,15 @@
 
 ::-webkit-scrollbar-track {
   border-radius: 100vh;
-  background: #020617;
+  background: var(--scrollbar-track);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #1f142a;
+  background: var(--scrollbar-thumb);
   border-radius: 100vh;
-  border: 2px solid #1f142a;
+  border: 2px solid var(--scrollbar-track);
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #c0a0b9;
+  background: var(--scrollbar-thumb-hover);
 }

@@ -4,29 +4,26 @@ import React, { useEffect, useState } from "react";
 const BigIntro = ({ children }: { children: React.ReactNode }) => {
   const [theBigIntro, setTheBigIntro] = useState(true);
 
-  const handleTimeout = () => {
-    setTimeout(() => {
+  useEffect(() => {
+    const timeout = window.setTimeout(() => {
       setTheBigIntro(false);
     }, 1000);
-  };
 
-  useEffect(() => {
-    handleTimeout();
+    return () => window.clearTimeout(timeout);
   }, []);
 
   return (
     <>
-      {theBigIntro ? (
-        <div className="h-screen min-h-screen items-center justify-center flex lg:flex-row md:flex-row flex-col  animate-fadein duration-1000 ">
-
-<div className="spinner">
-    <div className="spinner1">
-      
-    </div>
-</div>
+      {children}
+      {theBigIntro && (
+        <div
+          className="fixed inset-0 z-[100] flex min-h-screen items-center justify-center bg-white animate-fadein duration-1000 dark:bg-[#020617]"
+          aria-hidden="true"
+        >
+          <div className="spinner">
+            <div className="spinner1" />
+          </div>
         </div>
-      ) : (
-        children
       )}
     </>
   );

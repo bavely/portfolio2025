@@ -67,18 +67,77 @@ export const ModalBody = ({
   children: ReactNode;
   className?: string;
 }) => {
-  const { open } = useModal();
+  const { open, setOpen } = useModal();
+  const modalRef = useRef<HTMLDivElement>(null);
 
+  // #42: restore whatever the inline style was, rather than hard-coding "auto".
+  // Writing "auto" unconditionally overwrote any other value the document had.
   useEffect(() => {
-    if (open) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "auto";
-    }
+    if (!open) return;
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+    };
   }, [open]);
 
-  const modalRef = useRef(null);
-  const { setOpen } = useModal();
+  // Escape to close, and keep Tab inside the dialog while it is open. Without
+  // this, focus stayed on the page behind the modal and there was no keyboard
+  // way out of it.
+  useEffect(() => {
+    if (!open) return;
+
+    const previouslyFocused = document.activeElement as HTMLElement | null;
+
+    const FOCUSABLE =
+      'a[href], button:not([disabled]), textarea, input, select, [tabindex]:not([tabindex="-1"])';
+
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        event.stopPropagation();
+        setOpen(false);
+        return;
+      }
+
+      if (event.key !== "Tab" || !modalRef.current) return;
+
+      const focusable = Array.from(
+        modalRef.current.querySelectorAll<HTMLElement>(FOCUSABLE)
+      ).filter((el) => el.offsetParent !== null);
+
+      if (focusable.length === 0) {
+        event.preventDefault();
+        return;
+      }
+
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      const active = document.activeElement;
+
+      // Wrap around at both ends so focus never escapes to the page behind.
+      if (event.shiftKey && (active === first || !modalRef.current.contains(active))) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && active === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    };
+
+    document.addEventListener("keydown", onKeyDown);
+    // Move focus into the dialog once it has mounted.
+    const raf = requestAnimationFrame(() => modalRef.current?.focus());
+
+    return () => {
+      document.removeEventListener("keydown", onKeyDown);
+      cancelAnimationFrame(raf);
+      // Hand focus back to whatever opened the modal.
+      previouslyFocused?.focus?.();
+    };
+  }, [open, setOpen]);
+
   useOutsideClick(modalRef, () => setOpen(false));
 
   return (
@@ -102,8 +161,12 @@ export const ModalBody = ({
 
           <motion.div
             ref={modalRef}
+            role="dialog"
+            aria-modal="true"
+            aria-label="Project details"
+            tabIndex={-1}
             className={cn(
-              "min-h-[50%] max-h-[90%] md:max-w-[40%] bg-white dark:bg-neutral-950 border border-transparent dark:border-neutral-800 md:rounded-2xl relative z-50 flex flex-col flex-1 overflow-hidden",
+              "min-h-[50%] max-h-[90%] md:max-w-[40%] bg-white dark:bg-neutral-950 border border-transparent dark:border-neutral-800 md:rounded-2xl relative z-50 flex flex-col flex-1 overflow-hidden outline-none",
               className
             )}
             initial={{
@@ -185,6 +248,7 @@ const Overlay = ({ className }: { className?: string }) => {
         opacity: 0,
         backdropFilter: "blur(0px)",
       }}
+      aria-hidden="true"
       className={`fixed inset-0 h-full w-full bg-black bg-opacity-50 z-50 ${className}`}
     ></motion.div>
   );
@@ -194,7 +258,9 @@ const CloseIcon = () => {
   const { setOpen } = useModal();
   return (
     <button
+      type="button"
       onClick={() => setOpen(false)}
+      aria-label="Close project details"
       className="absolute top-4 right-4 group"
     >
       <svg

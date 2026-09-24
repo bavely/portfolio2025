@@ -20,8 +20,13 @@ const nextConfig = {
       ];
     },
     images: {
-        domains: ["cdn.simpleicons.org", "images.unsplash.com"], // Allow external images from simpleicons
         remotePatterns: [
+          {
+            protocol: 'https',
+            hostname: 'cdn.simpleicons.org',
+            port: '',
+            pathname: '/**',
+          },
           {
             protocol: 'https',
             hostname: 'images.unsplash.com',

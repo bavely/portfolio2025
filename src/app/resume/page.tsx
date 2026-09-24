@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import { createPageMetadata } from "@/lib/metadata";
 
 // Served straight from public/. The previous version read the file on the server,
 // base64-encoded it and shipped a ~139 KB data URL on every visit (+33% encoding
@@ -6,10 +6,11 @@ import type { Metadata } from "next";
 // from this path.
 const RESUME_PATH = "/uploads/resume.pdf";
 
-export const metadata: Metadata = {
-  title: "Resume | Bavely Tawfik",
-  description: "Resume of Bavely Tawfik, full-stack web developer.",
-};
+export const metadata = createPageMetadata(
+  "Resume",
+  "Resume of Bavely Tawfik, full-stack web developer.",
+  "/resume",
+);
 
 export default function Resume() {
   return (

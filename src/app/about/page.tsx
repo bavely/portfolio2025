@@ -1,6 +1,13 @@
-"use client";
+import Link from "next/link";
+import { createPageMetadata } from "@/lib/metadata";
 import { Spotlight } from "@/components/ui/spotlight-new";
-import { Link } from 'next-view-transitions'
+
+export const metadata = createPageMetadata(
+  "About",
+  "Learn about Bavely Tawfik, a full-stack developer focused on modern, scalable, performant web applications.",
+  "/about",
+);
+
 export default function About() {
   return (
     <section className="h-screen min-h-screen items-center justify-center  flex lg:flex-row md:flex-row flex-col animate-fadein duration-1000 z-10 p-10 ">

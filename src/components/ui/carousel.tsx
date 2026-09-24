@@ -6,7 +6,8 @@ import {
   IconWorldWww,
 } from "@tabler/icons-react";
 import Link from "next/link";
-import { useState, useRef, useEffect } from "react";
+import Image from "next/image";
+import { useState, useRef } from "react";
 import { useModal } from "../ui/animated-modal";
 import { ShineBorder } from "./shine-border";
 export interface SlideData {
@@ -25,6 +26,7 @@ interface SlideProps {
   slide: SlideData;
   index: number;
   current: number;
+  total: number;
   handleSlideClick: (index: number) => void;
 }
 
@@ -36,57 +38,38 @@ interface SlideProps {
 const hasLink = (href: string) =>
   Boolean(href) && href !== "#" && href !== "/pagenotfound";
 
-const Slide = ({ slide, index, current, handleSlideClick }: SlideProps) => {
+const Slide = ({ slide, index, current, total, handleSlideClick }: SlideProps) => {
   const slideRef = useRef<HTMLLIElement>(null);
-
-  const xRef = useRef(0);
-  const yRef = useRef(0);
-  const frameRef = useRef<number>();
-
-  useEffect(() => {
-    const animate = () => {
-      if (!slideRef.current) return;
-
-      const x = xRef.current;
-      const y = yRef.current;
-
-      slideRef.current.style.setProperty("--x", `${x}px`);
-      slideRef.current.style.setProperty("--y", `${y}px`);
-
-      frameRef.current = requestAnimationFrame(animate);
-    };
-
-    frameRef.current = requestAnimationFrame(animate);
-
-    return () => {
-      if (frameRef.current) {
-        cancelAnimationFrame(frameRef.current);
-      }
-    };
-  }, []);
 
   const handleMouseMove = (event: React.MouseEvent) => {
     const el = slideRef.current;
-    if (!el) return;
+    if (!el || current !== index) return;
 
     const r = el.getBoundingClientRect();
-    xRef.current = event.clientX - (r.left + Math.floor(r.width / 2));
-    yRef.current = event.clientY - (r.top + Math.floor(r.height / 2));
+    const x = event.clientX - (r.left + Math.floor(r.width / 2));
+    const y = event.clientY - (r.top + Math.floor(r.height / 2));
+
+    // Pointer events already arrive once per painted frame in modern browsers;
+    // update only the active element instead of running one permanent rAF loop
+    // for every slide.
+    el.style.setProperty("--x", `${x}px`);
+    el.style.setProperty("--y", `${y}px`);
   };
 
   const handleMouseLeave = () => {
-    xRef.current = 0;
-    yRef.current = 0;
-  };
-
-  const imageLoaded = (event: React.SyntheticEvent<HTMLImageElement>) => {
-    event.currentTarget.style.opacity = "1";
+    slideRef.current?.style.setProperty("--x", "0px");
+    slideRef.current?.style.setProperty("--y", "0px");
   };
 
   const { src, gitHub, live, title } = slide;
   const { setOpen } = useModal();
 
   const handleOpenDetails = () => {
+    // Selects the slide explicitly rather than relying on the click bubbling up
+    // to the <li>. That bubbling was the only thing keeping the modal in sync
+    // with the visible project, so removing the <li> handler without this would
+    // have opened the modal on a stale project.
+    handleSlideClick(index);
     setOpen(true);
   };
 
@@ -94,8 +77,10 @@ const Slide = ({ slide, index, current, handleSlideClick }: SlideProps) => {
     <div className="[perspective:1200px] [transform-style:preserve-3d]">
       <li
         ref={slideRef}
+        role="group"
+        aria-roledescription="slide"
+        aria-label={`${title} (${index + 1} of ${total})`}
         className="flex flex-1 flex-col items-center justify-center relative text-center text-white opacity-100 transition-all duration-300 ease-in-out w-[70vmin] h-[70vmin] mx-[4vmin] z-10 "
-        onClick={() => handleSlideClick(index)}
         onMouseMove={handleMouseMove}
         onMouseLeave={handleMouseLeave}
         style={{
@@ -116,26 +101,46 @@ const Slide = ({ slide, index, current, handleSlideClick }: SlideProps) => {
                 : "none",
           }}
         >
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            className="absolute inset-0 w-[120%] h-[120%] object-cover opacity-100 transition-opacity duration-600 ease-in-out"
+          <div
+            className="absolute inset-0 h-[120%] w-[120%] transition-opacity duration-700 ease-in-out"
             style={{
               opacity: current === index ? 1 : 0.5,
             }}
-            alt={title}
-            src={src}
-            onLoad={imageLoaded}
-            loading="eager"
-            decoding="sync"
-          />
+          >
+            <Image
+              fill
+              alt={title}
+              src={src}
+              sizes="84vmin"
+              loading={current === index ? "eager" : "lazy"}
+              decoding="async"
+              className="object-cover"
+            />
+          </div>
           {current === index && (
             <div className="absolute inset-0 bg-black/30 transition-all duration-1000" />
           )}
         </div>
+
+        {/* Bringing a slide to the front used to be a click handler on the <li>,
+            which no keyboard or screen-reader user could reach. A real button
+            covers the inactive slides instead; the active slide has none, so its
+            own links stay clickable. */}
+        {current !== index && (
+          <button
+            type="button"
+            onClick={() => handleSlideClick(index)}
+            aria-label={`Show ${title}`}
+            className="absolute inset-0 z-20 cursor-pointer rounded-[1%] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-indigo-500"
+          />
+        )}
         {/* <ShineBorder
       className="relative size-48 rounded-lg"
       color={["#A07CFE", "#FE8FB5", "#FFBE7B"]}
     > */}
+        {/* When not current this block is `invisible` (visibility: hidden),
+            which already takes it out of both the tab order and the
+            accessibility tree - no aria-hidden needed. */}
         <ShineBorder
         color={["#A07CFE", "#FE8FB5", "#FFBE7B"]}
           className={`relative p-[4vmin] transition-opacity duration-1000 ease-in-out bg-gradient-to-r from-slate-950/[0.5] via-[#2e203b]/[0.5] to-[#1f142a]/[0.7] bg-clip-padding tracking-tighter size-48 rounded-lg flex flex-col gap-4 text-center ${
@@ -204,6 +209,7 @@ const CarouselControl = ({
         type === "previous" ? "rotate-180" : ""
       }`}
       title={title}
+      aria-label={title}
       onClick={handleClick}
     >
       <IconArrowNarrowRight className="text-neutral-600 dark:text-neutral-200" />
@@ -256,6 +262,7 @@ export default function Carousel({ slides, currentSlide }: CarouselProps) {
             slide={slide}
             index={index}
             current={current}
+            total={slides.length}
             handleSlideClick={handleSlideClick}
           />
         ))}

@@ -2,7 +2,7 @@
 import React from "react";
 import Image from "next/image";
 import mypic from "../assets/1.png";
-import { useTheme } from "next-themes";
+import { useThemeMode } from "../hooks/useThemeMode";
 import { useMediaQuery } from "../hooks/useMediaQuery";
 import { AuroraText } from "@/components/ui/aurora-text";
 import { ArrowRightIcon } from "@radix-ui/react-icons";
@@ -12,7 +12,7 @@ import { ShinyButton } from "./shiny-button";
 import { BoxReveal } from "./box-reveal";
 
 const Intro = () => {
-  const { theme } = useTheme();
+  const mode = useThemeMode();
    const isMobile = useMediaQuery("(max-width: 770px)");
    const { push } = useTransitionRouter();
   return (
@@ -31,18 +31,18 @@ const Intro = () => {
       </div>
       <div
         className={
-          `animate-floating  ${ isMobile ? "" : theme === "dark"
+          `animate-floating  ${ isMobile ? "" : mode === "dark"
             ? ` backdrop-container  `
             : ` backdrop-container-white`
         }`}
       >
         
         {isMobile ? (
-          <Image src={mypic} alt="backdrop" height={200} width={200} />
+          <Image src={mypic} alt="Bavely Tawfik" height={200} width={200} priority />
         ) : (
           <>
           <div className=" min-h-[43vh]"></div>
-          <Image src={mypic} alt="backdrop"   />
+          <Image src={mypic} alt="Bavely Tawfik" priority />
           </>
         )}
         

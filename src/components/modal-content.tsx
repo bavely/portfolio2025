@@ -9,15 +9,8 @@ import {
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { SlideData } from "./ui/carousel";
-import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
-  } from "@/components/ui/table"
-  import ImageViewer from "react-simple-image-viewer";
+import ImageViewer from "react-simple-image-viewer";
+
 export function AnimatedModal({ slide }: { slide: SlideData }) {
   const { setOpen } = useModal();
 
@@ -28,12 +21,12 @@ export function AnimatedModal({ slide }: { slide: SlideData }) {
 
   useEffect(() => {
     if (slide) {
-        setCurrentSlide(slide);
-        setImagesList(slide.about.Images);
+      setCurrentSlide(slide);
+      setImagesList(slide.about.Images);
     }
   }, [slide]);
 
-  const openImageViewer = useCallback((index: React.SetStateAction<number>) => {
+  const openImageViewer = useCallback((index: number) => {
     setCurrentImage(index);
     setIsViewerOpen(true);
   }, []);
@@ -49,13 +42,19 @@ export function AnimatedModal({ slide }: { slide: SlideData }) {
     () => currentSlide.about.Images.map(() => Math.random() * 20 - 10),
     [currentSlide]
   );
+
   return (
     <ModalBody>
-      <ModalContent className="overflow-y-scroll">
+      {/* overflow-y-auto, not -scroll: -scroll paints a scrollbar gutter even
+          when the content fits. */}
+      <ModalContent className="overflow-y-auto">
         <h4 className="text-lg md:text-2xl text-neutral-600 dark:text-neutral-100 font-bold text-center mb-8">
-          {currentSlide.title}    
+          {currentSlide.title}
         </h4>
-        <div className="flex justify-center items-center">
+
+        {/* flex-wrap: projects with eight screenshots used to squeeze into one
+            non-wrapping row and overflow the dialog. */}
+        <div className="flex flex-wrap items-center justify-center">
           {currentSlide.about.Images.map((image, idx) => (
             <motion.div
               key={"images" + idx}
@@ -74,62 +73,66 @@ export function AnimatedModal({ slide }: { slide: SlideData }) {
               }}
               className="rounded-xl -mr-4 mt-4 p-1 bg-white dark:bg-neutral-800 dark:border-neutral-700 border border-neutral-100 flex-shrink-0 overflow-hidden"
             >
-              <Image
-                src={image}
-                alt={`${currentSlide.title} screenshot ${idx + 1}`}
-                width="500"
-                height="500"
-                className="rounded-lg h-20 w-20 md:h-40 md:w-40 object-cover flex-shrink-0"
+              {/* A real button, so the viewer can be opened by keyboard. The
+                  click handler used to sit on the <img> itself. */}
+              <button
+                type="button"
                 onClick={() => openImageViewer(idx)}
-              />
+                aria-label={`View ${currentSlide.title} screenshot ${idx + 1} full size`}
+                className="block rounded-lg focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500"
+              >
+                <Image
+                  src={image}
+                  alt={`${currentSlide.title} screenshot ${idx + 1}`}
+                  width={320}
+                  height={320}
+                  // Displayed at 80px (mobile) / 160px, so tell the optimiser
+                  // that instead of letting it serve for a 500px slot.
+                  sizes="(max-width: 768px) 80px, 160px"
+                  className="rounded-lg h-20 w-20 md:h-40 md:w-40 object-cover flex-shrink-0"
+                />
+              </button>
             </motion.div>
           ))}
         </div>
+
         <div className="flex flex-col py-10">
-        <div className=" flex flex-col items-start justify-start max-w-full mx-auto">
+          <div className="flex flex-col items-start justify-start max-w-full mx-auto">
             <p className="text-md font-bold md:text-lg lg:text-lg">About This Project</p>
-         <p className="text-sm font-bold md:text-lg lg:text-lg w-full dark:text-slate-400 ">{currentSlide.about.Text}</p>
-        </div>
- <div className="flex flex-row py-5">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead className="text-sm font-bold md:text-lg lg:text-lg text-end">Tech Used</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody className="divide-y flex flex-col ">
-            {currentSlide.about.Tech.map((tech, idx) => (
-              idx % 2 === 0 && <TableRow key={tech}>
-                <TableCell className="text-sm font-bold md:text-lg lg:text-lg">{tech}</TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead className="text-sm font-bold md:text-lg lg:text-lg">{"   "}</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody >
-                        {currentSlide.about.Tech.map((tech, idx) => (
-              idx % 2 !== 0 && <TableRow key={tech}>
-                <TableCell className="text-sm font-bold md:text-lg lg:text-lg">{tech}</TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
- </div>
+            <p className="text-sm font-bold md:text-lg lg:text-lg w-full dark:text-slate-400 whitespace-pre-line">
+              {currentSlide.about.Text}
+            </p>
+          </div>
+
+          {/* Two real columns. This was previously two <table>s fed by
+              even/odd index, the second with a whitespace-only header cell, to
+              fake a two-column layout out of a flat list. */}
+          <div className="py-5">
+            <p className="text-md font-bold md:text-lg lg:text-lg">Tech Used</p>
+            <ul className="mt-2 grid grid-cols-2 gap-x-6 gap-y-1">
+              {currentSlide.about.Tech.map((tech, idx) => (
+                <li
+                  key={`${tech}-${idx}`}
+                  className="text-sm font-bold md:text-lg lg:text-lg dark:text-slate-400"
+                >
+                  {tech}
+                </li>
+              ))}
+            </ul>
+          </div>
         </div>
       </ModalContent>
+
       <ModalFooter className="gap-4">
         <button
+          type="button"
           onClick={() => setOpen(false)}
           className="px-2 py-1 bg-gray-200 text-black dark:bg-black dark:border-black dark:text-white border border-gray-300 rounded-md text-sm w-28"
         >
           Close
         </button>
       </ModalFooter>
+
       {isViewerOpen && (
         <ImageViewer
           src={imagesList}
@@ -137,7 +140,7 @@ export function AnimatedModal({ slide }: { slide: SlideData }) {
           onClose={closeImageViewer}
           disableScroll={false}
           backgroundStyle={{
-            backgroundColor: "rgba(0,0,0,0.9)"
+            backgroundColor: "rgba(0,0,0,0.9)",
           }}
           closeOnClickOutside={true}
         />
@@ -145,4 +148,3 @@ export function AnimatedModal({ slide }: { slide: SlideData }) {
     </ModalBody>
   );
 }
-

@@ -5,7 +5,7 @@ import { LogoutButton } from "@/components/logout-button";
 import { UploadForm } from "./upload-form";
 
 export const metadata: Metadata = {
-  title: "Resume Import | Bavely Tawfik",
+  title: "Resume Import",
   robots: { index: false, follow: false },
 };
 

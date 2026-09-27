@@ -17,7 +17,34 @@ const Portfolio = () => {
   });
 
  
-  const slideData = [
+  const slideData: SlideData[] = [
+    {
+      title: "Bavely Tawfik Portfolio",
+      src: "/images/portfolio-2025-home.webp",
+      gitHub: "https://github.com/bavely/portfolio2025",
+      live: "https://pavli-tawfik.com/",
+      about: {
+        Images: [
+          "/images/portfolio-2025-home.webp",
+          "/images/portfolio-2025-about.webp",
+          "/images/portfolio-2025-skills.webp",
+          "/images/portfolio-2025-portfolio.webp",
+          "/images/portfolio-2025-contact.webp",
+        ],
+        Text: "My current portfolio is an immersive, responsive showcase of my full-stack work, technical skills, professional background, and contact information. It features animated page transitions, an interactive project carousel, detailed project galleries, dark and light themes, and a secure contact workflow.",
+        Tech: [
+          "Next.js",
+          "React",
+          "TypeScript",
+          "Tailwind CSS",
+          "Framer Motion",
+          "Firebase",
+          "Nodemailer",
+          "Google reCAPTCHA",
+          "Jest",
+        ],
+      },
+    },
     {
       title: "CuroRx",
       

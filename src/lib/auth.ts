@@ -45,7 +45,7 @@ export function createSessionToken() {
   return `${expiresAt}.${sign(String(expiresAt))}`;
 }
 
-function isValidSessionToken(token: string | undefined) {
+export function isValidSessionToken(token: string | undefined) {
   if (!token) return false;
 
   const separator = token.indexOf(".");

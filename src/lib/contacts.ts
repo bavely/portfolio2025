@@ -11,6 +11,7 @@ import { FieldValue } from "firebase-admin/firestore";
 import htmltemplate from "../app/contactme/html";
 import { getAdminDb } from "@/lib/firebaseAdmin";
 import type { ContactInput, ContactRecord } from "@/lib/contact-input";
+import { escapeHtml } from "@/lib/escape-html";
 
 const COLLECTION = "contacts";
 
@@ -96,16 +97,6 @@ function getTransporter() {
 /** Must be a sender address verified in Brevo, or the relay rejects the mail. */
 function fromAddress() {
   return process.env.CONTACT_FROM_EMAIL || "bavelytawfik@gmail.com";
-}
-
-/** The submitted text is untrusted, so escape it before embedding in HTML. */
-function escapeHtml(value: string) {
-  return value
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#39;");
 }
 
 type SmtpError = Error & {

@@ -3,9 +3,7 @@
 import { writeFile, mkdir } from "node:fs/promises";
 import path from "node:path";
 import { requireAdmin } from "@/lib/auth";
-
-const MAX_BYTES = 5 * 1024 * 1024; // 5 MB
-const PDF_SIGNATURE = "%PDF-";
+import { hasPdfSignature, validateResumeMetadata } from "@/lib/resume-upload";
 
 export type UploadResult = { ok: true; path: string } | { ok: false; error: string };
 
@@ -25,18 +23,13 @@ export async function upload(formData: FormData): Promise<UploadResult> {
     return { ok: false, error: "No file provided." };
   }
 
-  if (file.size > MAX_BYTES) {
-    return { ok: false, error: "File is larger than 5 MB." };
-  }
-
-  if (file.type !== "application/pdf") {
-    return { ok: false, error: "Only PDF files are accepted." };
-  }
+  const metadataValidation = validateResumeMetadata(file);
+  if (!metadataValidation.ok) return metadataValidation;
 
   const buffer = Buffer.from(await file.arrayBuffer());
 
   // The declared MIME type is caller-controlled, so confirm the actual bytes.
-  if (buffer.subarray(0, PDF_SIGNATURE.length).toString("latin1") !== PDF_SIGNATURE) {
+  if (!hasPdfSignature(buffer)) {
     return { ok: false, error: "That file is not a valid PDF." };
   }
 

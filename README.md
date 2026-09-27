@@ -7,7 +7,7 @@ Personal portfolio website built with Next.js, TypeScript, Tailwind CSS, Firebas
 - Animated landing page with theme-aware header, live clock, floating dock navigation, and view transitions.
 - Routes for About, Skills, Portfolio, Contact, Resume, Private, and Resume Import workflows.
 - Portfolio carousel with modal project details, screenshots, GitHub links, live links, and technology tags.
-- Skills page with animated circular progress indicators and Simple Icons cloud.
+- Skills page with categorized proficiency tiers and an animated Simple Icons cloud.
 - Contact form with server-verified Google reCAPTCHA v3, input validation, per-IP rate limiting, and Firestore persistence.
 - Private contact-message table backed by Firestore and TanStack Table, behind a server-side admin session.
 - Resume PDF served from `public/uploads/resume.pdf` with a download fallback, plus an admin-only resume upload route (PDF only, 5 MB cap, magic-byte checked) that replaces `public/uploads/resume.pdf`.
@@ -73,6 +73,7 @@ Secret (server only):
 
 ```bash
 RECAPTCHA_SECRET_KEY=             # verifies reCAPTCHA tokens server-side
+RECAPTCHA_EXPECTED_HOSTNAME=      # optional production hostname validation
 ADMIN_PASSWORD=                   # gates /private and /resumeimport
 ADMIN_SESSION_SECRET=             # HMAC key signing the admin session cookie
 FIREBASE_PROJECT_ID=              # Firebase Admin service account
@@ -113,7 +114,12 @@ node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
 - **Contact form.** `/api/contact` verifies the reCAPTCHA token with Google
   before writing, validates and length-caps every field, and rate limits to 5
   submissions per IP per hour. Verification fails closed: if the check cannot be
-  completed, the submission is rejected.
+  completed, the action or score is missing, or the optional hostname does not
+  match, the submission is rejected.
+- **Browser headers.** Every route receives a Content Security Policy,
+  clickjacking protection, MIME-sniffing protection, a strict referrer policy,
+  and a minimal permissions policy. The CSP allows only the origins required by
+  the application and Google reCAPTCHA.
 - **Rate limits** are held in process memory, so on a serverless host they apply
   per instance. Move them to a shared store if abuse becomes a real problem.
 - **Contact email.** After a submission is saved, `/api/contact` emails
@@ -132,7 +138,12 @@ npm run dev       # Start local development server
 npm run build     # Build production app and run next-sitemap afterward
 npm run start     # Start production server
 npm run lint      # Run Next.js linting
+npm test          # Run the Jest unit test suite once
+npm run test:watch # Run Jest in watch mode
 ```
+
+GitHub Actions runs linting, all unit tests, and a production build for every
+pull request and every push to `main`.
 
 The `postbuild` lifecycle runs `next-sitemap`, using `next-sitemap.config.js` with `https://pavli-tawfik.com` as the configured site URL.
 

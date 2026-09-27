@@ -13,6 +13,7 @@ type VerifyResponse = {
   success?: boolean;
   score?: number;
   action?: string;
+  hostname?: string;
   "error-codes"?: string[];
 };
 
@@ -64,14 +65,22 @@ export async function verifyRecaptcha(
   }
 
   // Guards against a token minted for a different action being replayed here.
-  if (payload.action && payload.action !== expectedAction) {
+  if (payload.action !== expectedAction) {
     return { ok: false, reason: "action-mismatch" };
   }
 
-  const score = typeof payload.score === "number" ? payload.score : null;
-  if (score !== null && score < MIN_SCORE) {
+  if (typeof payload.score !== "number" || !Number.isFinite(payload.score)) {
+    return { ok: false, reason: "missing-score" };
+  }
+
+  if (payload.score < MIN_SCORE) {
     return { ok: false, reason: "low-score" };
   }
 
-  return { ok: true, score };
+  const expectedHostname = process.env.RECAPTCHA_EXPECTED_HOSTNAME?.trim();
+  if (expectedHostname && payload.hostname !== expectedHostname) {
+    return { ok: false, reason: "hostname-mismatch" };
+  }
+
+  return { ok: true, score: payload.score };
 }

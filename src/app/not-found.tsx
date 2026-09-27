@@ -3,7 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "Page not found | Bavely Tawfik",
+  title: "Page not found",
   robots: { index: false, follow: false },
 };
 

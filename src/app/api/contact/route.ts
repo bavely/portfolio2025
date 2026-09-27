@@ -76,8 +76,8 @@ export async function POST(req: Request) {
 
   // Best effort, and deliberately after the save: the message is already stored,
   // so a mail failure must not make the visitor resubmit and duplicate it. Send
-  // the owner notification first so a rejected login is attempted and logged
-  // only once instead of producing two identical AUTH failures in parallel.
+  // the owner notification first so a rejected API key is attempted and logged
+  // only once instead of producing two identical 401 failures in parallel.
   const notification = await notifyOwnerOfSubmission(validated.data);
   if (!notification.authenticationFailed) {
     await sendAcknowledgementEmail(validated.data);

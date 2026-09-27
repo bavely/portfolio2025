@@ -79,8 +79,7 @@ ADMIN_SESSION_SECRET=             # HMAC key signing the admin session cookie
 FIREBASE_PROJECT_ID=              # Firebase Admin service account
 FIREBASE_CLIENT_EMAIL=
 FIREBASE_PRIVATE_KEY=
-BREVO_SMTP_USER=                  # Brevo SMTP relay
-BREVO_SMTP_KEY=
+BREVO_API_KEY=                    # Brevo transactional email API key (xkeysib-...)
 CONTACT_NOTIFY_TO=                # where new submissions are announced
 CONTACT_FROM_EMAIL=               # sender address; must be verified in Brevo
 ```

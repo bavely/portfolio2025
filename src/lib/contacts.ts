@@ -6,7 +6,6 @@
 // Firestore directly — skipping the API route's reCAPTCHA check, validation and
 // rate limit entirely. Keeping these functions as ordinary imports means the
 // API route is the only way in.
-import nodemailer, { type Transporter } from "nodemailer";
 import { FieldValue } from "firebase-admin/firestore";
 import htmltemplate from "../app/contactme/html";
 import { getAdminDb } from "@/lib/firebaseAdmin";
@@ -62,83 +61,89 @@ export async function listContactForms(): Promise<ContactRecord[]> {
   return records.sort((a, b) => (b.createdAt ?? "").localeCompare(a.createdAt ?? ""));
 }
 
-let transporter: Transporter | null = null;
+const BREVO_API_URL = "https://api.brevo.com/v3/smtp/email";
+const BREVO_TIMEOUT_MS = 10_000;
 
-function getTransporter() {
-  if (transporter) return transporter;
+// Sent over HTTPS rather than SMTP because DigitalOcean blocks outbound SMTP
+// ports (25/465/587) on droplets, which made every send time out.
+function brevoApiKey() {
+  // Whitespace copied alongside the key is enough for Brevo to reject it with
+  // 401, so normalize the environment value at the boundary.
+  const key = process.env.BREVO_API_KEY?.trim();
 
-  // Whitespace copied alongside either credential is enough for Brevo to
-  // reject AUTH with 535, so normalize the environment values at the boundary.
-  const user = process.env.BREVO_SMTP_USER?.trim();
-  const pass = process.env.BREVO_SMTP_KEY?.trim();
-
-  if (!user || !pass) {
-    throw new Error(
-      "Missing BREVO_SMTP_USER / BREVO_SMTP_KEY. See README.md > Environment Variables."
-    );
+  if (!key) {
+    throw new Error("Missing BREVO_API_KEY. See README.md > Environment Variables.");
   }
 
-  transporter = nodemailer.createTransport({
-    host: "smtp-relay.brevo.com",
-    port: 587,
-    secure: false,
-    // Port 587 starts unencrypted and upgrades via STARTTLS. Without
-    // requireTLS, nodemailer will fall back to sending in the clear if the
-    // upgrade is unavailable — which would expose these credentials.
-    requireTLS: true,
-    auth: { user, pass },
-    connectionTimeout: 10_000,
-    greetingTimeout: 10_000,
-  });
-
-  return transporter;
+  return key;
 }
 
-/** Must be a sender address verified in Brevo, or the relay rejects the mail. */
+/** Must be a sender address verified in Brevo, or the API rejects the mail. */
 function fromAddress() {
   return process.env.CONTACT_FROM_EMAIL || "bavelytawfik@gmail.com";
 }
 
-type SmtpError = Error & {
-  code?: string;
-  responseCode?: number;
-  command?: string;
+type BrevoEmail = {
+  to: string;
+  replyTo?: string;
+  subject: string;
+  html: string;
+  text?: string;
 };
 
-function isSmtpAuthenticationError(error: unknown) {
-  const smtpError = error as SmtpError;
-  return (
-    smtpError.code === "EAUTH" ||
-    smtpError.responseCode === 525 ||
-    smtpError.responseCode === 535
-  );
+class BrevoError extends Error {
+  constructor(
+    readonly status: number,
+    message: string,
+  ) {
+    super(message);
+  }
+}
+
+async function sendMail(email: BrevoEmail) {
+  const response = await fetch(BREVO_API_URL, {
+    method: "POST",
+    headers: {
+      "api-key": brevoApiKey(),
+      "content-type": "application/json",
+      accept: "application/json",
+    },
+    body: JSON.stringify({
+      sender: { email: fromAddress() },
+      to: [{ email: email.to }],
+      replyTo: email.replyTo ? { email: email.replyTo } : undefined,
+      subject: email.subject,
+      htmlContent: email.html,
+      textContent: email.text,
+    }),
+    signal: AbortSignal.timeout(BREVO_TIMEOUT_MS),
+  });
+
+  if (!response.ok) {
+    // Brevo reports failures as { code, message }; fall back to the status line.
+    const body = (await response.json().catch(() => null)) as { message?: string } | null;
+    throw new BrevoError(response.status, body?.message || response.statusText);
+  }
+}
+
+function isAuthenticationError(error: unknown) {
+  return error instanceof BrevoError && error.status === 401;
 }
 
 function logMailError(action: string, error: unknown) {
-  const smtpError = error as SmtpError;
-
-  if (smtpError.responseCode === 525) {
-    console.error(
-      `Failed to ${action}: Brevo rejected this server's outbound IP address ` +
-        "(525). Authorize the IP in Brevo Settings > Security > Authorized IPs, " +
-        "or review the SMTP IP-blocking policy.",
-    );
+  if (error instanceof BrevoError) {
+    const hint =
+      error.status === 401
+        ? " Confirm BREVO_API_KEY is an active API key (xkeysib-..., not an SMTP key) " +
+          "and that this server's IP is allowed in Brevo Settings > Security > Authorized IPs."
+        : "";
+    console.error(`Failed to ${action} [HTTP ${error.status}]: ${error.message}.${hint}`);
     return;
   }
 
-  if (smtpError.responseCode === 535 || smtpError.code === "EAUTH") {
-    console.error(
-      `Failed to ${action}: Brevo rejected the SMTP credentials (535). ` +
-        "Confirm BREVO_SMTP_USER matches the Login shown in Brevo and that " +
-        "BREVO_SMTP_KEY is an active SMTP key (not an API key).",
-    );
-    return;
-  }
-
-  const details =
-    error instanceof Error ? error.message : "Unknown SMTP transport error";
-  const code = smtpError.code ? ` [${smtpError.code}]` : "";
-  console.error(`Failed to ${action}${code}: ${details}`);
+  const details = error instanceof Error ? error.message : "Unknown Brevo API error";
+  const name = error instanceof Error ? ` [${error.name}]` : "";
+  console.error(`Failed to ${action}${name}: ${details}`);
 }
 
 export type MailOutcome = {
@@ -164,8 +169,7 @@ export async function notifyOwnerOfSubmission(data: ContactInput): Promise<MailO
   }
 
   try {
-    await getTransporter().sendMail({
-      from: fromAddress(),
+    await sendMail({
       to,
       // Lets you reply straight to the sender from your inbox.
       replyTo: data.email,
@@ -179,7 +183,7 @@ export async function notifyOwnerOfSubmission(data: ContactInput): Promise<MailO
 
     return { ok: true };
   } catch (error) {
-    const authenticationFailed = isSmtpAuthenticationError(error);
+    const authenticationFailed = isAuthenticationError(error);
     logMailError("send owner notification", error);
     return { ok: false, authenticationFailed };
   }
@@ -188,8 +192,7 @@ export async function notifyOwnerOfSubmission(data: ContactInput): Promise<MailO
 /** Sends the submitter a "thanks for your message" acknowledgement. */
 export async function sendAcknowledgementEmail(data: ContactInput): Promise<MailOutcome> {
   try {
-    await getTransporter().sendMail({
-      from: fromAddress(),
+    await sendMail({
       to: data.email,
       subject: "Thanks for your message",
       html: htmltemplate(data.name),
@@ -197,7 +200,7 @@ export async function sendAcknowledgementEmail(data: ContactInput): Promise<Mail
 
     return { ok: true };
   } catch (error) {
-    const authenticationFailed = isSmtpAuthenticationError(error);
+    const authenticationFailed = isAuthenticationError(error);
     logMailError("send acknowledgement email", error);
     return { ok: false, authenticationFailed };
   }
